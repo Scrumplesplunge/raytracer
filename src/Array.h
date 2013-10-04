@@ -23,7 +23,7 @@ template <typename T> class Array {
 		~Array();
 
 		void operator=(const Array&);
-		T& operator[](unsigned int);
+		T& operator[](unsigned int) const;
 		
 		void push(const T&);
 		T pop();
@@ -31,7 +31,18 @@ template <typename T> class Array {
 		void unshift(const T&);
 		T shift();
 
-		unsigned int length();
+		void insert(unsigned int, const T&);
+		T remove(unsigned int);
+
+		// High level stuff.
+		Array slice(unsigned int) const;
+		Array slice(unsigned int, unsigned int) const;
+		Array concat(const Array&) const;
+		Array merge(const Array&, int (*)(T, T)) const;
+
+		Array sort(int (*)(T, T)) const;
+
+		unsigned int length() const;
 };
 
 template <typename T> void Array<T>::startup(const Array<T>& parent) {
@@ -42,7 +53,7 @@ template <typename T> void Array<T>::startup(const Array<T>& parent) {
 	data = (T**) malloc(space * sizeof(T*));
 	
 	// Copy across all the stored values from the other array.
-	for (unsigned int i = 0; i < size; i++) data[i] = parent.data[i];
+	for (unsigned int i = 0; i < size; i++) data[i] = new T(parent[i]);
 }
 
 // Complexity : O(n)
@@ -130,7 +141,7 @@ template <typename T> void Array<T>::operator=(const Array<T>& parent) {
 	startup(parent);
 }
 
-template <typename T> T& Array<T>::operator[](unsigned int index) {
+template <typename T> T& Array<T>::operator[](unsigned int index) const {
 	// I'm too lazy to make it throw something sensible.
 	if (index >= size) throw 1;
 	return *data[index];
@@ -144,6 +155,9 @@ template <typename T> void Array<T>::push(const T& element) {
 }
 
 template <typename T> T Array<T>::pop() {
+	// Can't pop on an empty array.
+	if (size == 0) throw 1;
+
 	// Fetch the last element.
 	T* ptr = data[--size];
 
@@ -168,6 +182,9 @@ template <typename T> void Array<T>::unshift(const T& element) {
 }
 
 template <typename T> T Array<T>::shift() {
+	// Can't shift on an empty array.
+	if (size == 0) throw 1;
+
 	// Fetch the first element.
 	T* ptr = data[0];
 
@@ -186,7 +203,114 @@ template <typename T> T Array<T>::shift() {
 	return out;
 }
 
-template <typename T> unsigned int Array<T>::length() {
+template <typename T> void Array<T>::insert(unsigned int index, const T& element) {
+	// Can't insert before the beginning or after the end.
+	if (index < 0 || size < index) throw 1;
+
+	if (size == space) increase(size + 1);
+	
+	// Increase the size.
+	size++;
+	
+	// Shuffle everything up.
+	for (unsigned int i = size; i > index; i--) data[i] = data[i - 1];
+	data[index] = new T(element);
+}
+
+template <typename T> T Array<T>::remove(unsigned int index) {
+	// Can't remove if index is out of bounds.
+	if (index < 0 || size <= index) throw 1;
+
+	// Fetch the element.
+	T* ptr = data[index];
+
+	// Decrease the size value.
+	size--;
+
+	// Shuffle everything down.
+	for (unsigned int i = index; i < size; i++) data[i] = data[i + 1];
+
+	// If we are using less than a quarter of the available space, half the buffer size.
+	if ((size << 2) <= space) decrease(size << 1);
+
+	// Output the element.
+	T out = *ptr;
+	delete ptr;
+	return out;
+}
+
+template <typename T> Array<T> Array<T>::slice(unsigned int index) const {
+	// Output array.
+	Array<T> out;
+
+	// Add every element after and including the one at index.
+	for (unsigned int i = index; i < size; i++) {
+		out.push(operator[](i));
+	}
+	return out;
+}
+
+template <typename T> Array<T> Array<T>::slice(unsigned int index, unsigned int len) const {
+	// Output array.
+	Array<T> out;
+
+	// Add up to length elements after and including index.
+	unsigned int n = index + len;
+	n = n < size ? n : size;
+	for (unsigned int i = 0; i < n; i++) {
+		out.push(data[i]);
+	}
+	return out;
+}
+
+template <typename T> Array<T> Array<T>::concat(const Array& array) const {
+	// Output array.
+	Array<T> out(*this);
+
+	// Add all the elements from the second array.
+	for (unsigned int i = 0; i < array.size; i++) {
+		out.push(array[i]);
+	}
+	return out;
+}
+
+template <typename T> Array<T> Array<T>::merge(const Array& array, int (*compare)(T, T)) const {
+	// Output array.
+	Array<T> out;
+
+	// Add all the elements.
+	unsigned i = 0, j = 0;
+	while (i < size && j < array.size) {
+		unsigned int comp = compare(operator[](i), array[j]);
+		if (comp <= 0) {
+			out.push(operator[](i++));
+		} else {
+			out.push(array[j++]);
+		}
+	}
+
+	// Add the remaining elements.
+	while (i < size) out.push(operator[](i++));
+	while (j < array.size) out.push(array[j++]);
+	return out;
+}
+
+template <typename T> Array<T> Array<T>::sort(int (*compare)(T, T)) const {
+	// Output array (A clone of this).
+	Array<T> out;
+
+	// Insertion sort.
+	for (unsigned int i = 0; i < size; i++) {
+		unsigned int j = 0;
+		while (j < out.length() && compare(out[j], operator[](i)) <= 0) j++;
+		out.insert(j, operator[](i));
+	}
+
+	// Return the sorted array.
+	return out;
+}
+
+template <typename T> unsigned int Array<T>::length() const {
 	return size;
 }
 

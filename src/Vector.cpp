@@ -49,6 +49,10 @@ Vector operator-(const Vector& a, real k) {
 	return Vector(a.x - k, a.y - k, a.z - k);
 }
 
+Vector operator-(const Vector& a) {
+	return Vector(-a.x, -a.y, -a.z);
+}
+
 Vector operator*(const Vector& a, real k) {
 	return Vector(a.x * k, a.y * k, a.z * k);
 }

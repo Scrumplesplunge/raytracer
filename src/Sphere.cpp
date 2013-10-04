@@ -54,7 +54,7 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
 	}
 
 	if (ray.mask & TraceRes::NORMAL) {
-		far.normal = (far.position - position) / radius;
+		far.normal = (far.position - position).normalized();
 		far.mask |= TraceRes::NORMAL;
 	}
 
@@ -80,11 +80,11 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
 	}
 
 	if (ray.mask & TraceRes::NORMAL) {
-		near.normal = (near.position - position) / radius;
+		near.normal = (near.position - position).normalized();
 		near.mask |= TraceRes::NORMAL;
 	}
 
-	out.push(near);
+	out.unshift(near);
 
 	// We're done here.
 	return out;

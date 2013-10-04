@@ -9,3 +9,7 @@ TraceRes::TraceRes(const Primitive *prim) :
 	primitive(prim)
 {}
 
+int TraceRes::compare(TraceRes a, TraceRes b) {
+	return a.distance - b.distance;
+}
+

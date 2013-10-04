@@ -18,6 +18,8 @@ class TraceRes {
 			NORMAL		= 0x00000004,
 			DISTANCE	= 0x00000008,
 			ENTERING	= 0x00000010;
+
+		static int compare(TraceRes, TraceRes);
 	public:
 		TraceRes();
 		TraceRes(const Primitive*);

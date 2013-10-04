@@ -24,6 +24,7 @@ Vector operator+(real, const Vector&);
 Vector operator-(const Vector&, const Vector&);
 Vector operator-(const Vector&, real);
 Vector operator-(real, const Vector&);
+Vector operator-(const Vector&);
 
 Vector operator*(const Vector&, real);
 Vector operator*(real, const Vector&);
