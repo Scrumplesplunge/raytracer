@@ -130,6 +130,9 @@ void Image::loadBMP(const char *filename) {
 		}
 	}
 
+	// Delete the temporary buffer.
+	delete[] imageTempBuffer;
+
 	// The image is loaded! Phew!
 	success = true;
 }

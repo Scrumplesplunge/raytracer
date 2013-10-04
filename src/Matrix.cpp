@@ -13,10 +13,10 @@ Matrix Matrix::rotateX(real ang) const {
 	real ca = cos(ang), sa = sin(ang);
 	Vector q(0, ca, -sa), r(0, sa, ca);
 	return Matrix(
-		Vector(a.x, q.dot(a), r.dot(a)),
-		Vector(b.x, q.dot(b), r.dot(b)),
-		Vector(c.x, q.dot(c), r.dot(c)),
-		Vector(d.x, q.dot(d), r.dot(d))
+		Vector(a.x, dot(q, a), dot(r, a)),
+		Vector(b.x, dot(q, b), dot(r, b)),
+		Vector(c.x, dot(q, c), dot(r, c)),
+		Vector(d.x, dot(q, d), dot(r, d))
 	);
 }
 
@@ -24,10 +24,10 @@ Matrix Matrix::rotateY(real ang) const {
 	real ca = cos(ang), sa = sin(ang);
 	Vector p(ca, 0, -sa), r(sa, 0, ca);
 	return Matrix(
-		Vector(p.dot(a), a.y, r.dot(a)),
-		Vector(p.dot(b), b.y, r.dot(b)),
-		Vector(p.dot(c), c.y, r.dot(c)),
-		Vector(p.dot(d), d.y, r.dot(d))
+		Vector(dot(p, a), a.y, dot(r, a)),
+		Vector(dot(p, b), b.y, dot(r, b)),
+		Vector(dot(p, c), c.y, dot(r, c)),
+		Vector(dot(p, d), d.y, dot(r, d))
 	);
 }
 
@@ -35,10 +35,10 @@ Matrix Matrix::rotateZ(real ang) const {
 	real ca = cos(ang), sa = sin(ang);
 	Vector p(ca, -sa, 0), q(sa, ca, 0);
 	return Matrix(
-		Vector(p.dot(a), q.dot(a), a.z),
-		Vector(p.dot(b), q.dot(b), b.z),
-		Vector(p.dot(c), q.dot(c), c.z),
-		Vector(p.dot(d), q.dot(d), d.z)
+		Vector(dot(p, a), dot(q, a), a.z),
+		Vector(dot(p, b), dot(q, b), b.z),
+		Vector(dot(p, c), dot(q, c), c.z),
+		Vector(dot(p, d), dot(q, d), d.z)
 	);
 }
 
