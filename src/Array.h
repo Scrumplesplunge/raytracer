@@ -281,7 +281,7 @@ template <typename T> Array<T> Array<T>::merge(const Array& array, int (*compare
 	// Add all the elements.
 	unsigned i = 0, j = 0;
 	while (i < size && j < array.size) {
-		unsigned int comp = compare(operator[](i), array[j]);
+		int comp = compare(operator[](i), array[j]);
 		if (comp <= 0) {
 			out.push(operator[](i++));
 		} else {

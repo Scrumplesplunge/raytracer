@@ -23,5 +23,7 @@ class TraceRes {
 	public:
 		TraceRes();
 		TraceRes(const Primitive*);
+
+		void print();
 };
 

@@ -8,10 +8,13 @@
 #include "Array.h"
 #include "TraceRes.h"
 #include <cmath>
+#include <iostream>
 
-Sphere sphere(Vector(12, 2, 1), 3);
-Sphere sphere2(Vector(10, -1, -1), 2);
-CSGComplement antisphere(&sphere2);
+Sphere sphere(Vector(12, 0, 1), 3);
+Sphere sphere2(Vector(8, 2, 0), 2);
+Sphere sphere3(Vector(8, -1, 0), 2);
+CSGComplement antisphere1(&sphere2);
+CSGComplement antisphere2(&sphere3);
 CSGIntersection both;
 
 int main(int argc, char *args[]) {
@@ -19,7 +22,8 @@ int main(int argc, char *args[]) {
 	Image canvas(1024, 768);
 
 	both.add(&sphere);
-	both.add(&antisphere);
+	both.add(&antisphere1);
+	both.add(&antisphere2);
 
 	for (unsigned int y = 0, maxY = canvas.getHeight(); y < maxY; y++) {
 		for (unsigned int x = 0, maxX = canvas.getWidth(); x < maxX; x++) {

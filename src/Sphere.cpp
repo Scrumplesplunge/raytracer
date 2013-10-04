@@ -28,13 +28,11 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
 	// No intersection if the determinant is negative.
 	if (det < 0) return out;
 
-	det = sqrt(det);
-	real t1 = -b + det;
+	real sqrtdet = sqrt(det);
+	real t1 = -b + sqrtdet;
 
 	// No intersection if the latest intersection is behind the ray origin.
 	if (t1 < 0) return out;
-
-	real t2 = -b - det;
 
 	// Far intersection.
 	TraceRes far(this);
@@ -61,6 +59,7 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
 	out.push(far);
 
 	// Near intersection.
+	real t2 = -b - sqrtdet;
 	if (t2 < 0) return out;
 
 	TraceRes near(this);
