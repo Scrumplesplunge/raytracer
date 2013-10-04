@@ -9,7 +9,7 @@
 
 int main(int argc, char *args[]) {
 	// Test image writing.
-	Image canvas(640, 480);
+	Image canvas(8192, 6144);
 
 	Sphere sphere(Vector(10, 0, 0), 3);
 
@@ -21,13 +21,9 @@ int main(int argc, char *args[]) {
 			
 			unsigned char *pix = canvas(x, y);
 			if (res.length() == 2) {
-				// Calculate the distance travelled inside the sphere.
-				real dist = res[1].distance - res[0].distance;
-				dist = dist > 0 ? dist : -dist;
-
-				// Calculate the opacity.
-				real opacity = 1 - pow(0.9, dist);
-				pix[0] = pix[1] = pix[2] = (unsigned char)(255.9 * opacity);
+				pix[0] = (unsigned char)(127.9 * (res[1].normal.x + 1));
+				pix[1] = (unsigned char)(127.9 * (res[1].normal.y + 1));
+				pix[2] = (unsigned char)(127.9 * (res[1].normal.z + 1));
 			} else {
 				pix[0] = pix[1] = pix[2] = 0;
 			}
