@@ -13,27 +13,30 @@
 Sphere sphere(Vector(7, 0, 0), 3);
 Sphere sphere2(Vector(3, 2, 0), 2);
 Sphere sphere3(Vector(3, -1, 0), 2);
+Sphere sphere4(Vector(7, 0, 0), 2.75);
 CSGComplement antisphere1(&sphere2);
 CSGComplement antisphere2(&sphere3);
+CSGComplement antisphere3(&sphere4);
 CSGIntersection both;
 
 int main(int argc, char *args[]) {
 	// Test image writing.
-	Image canvas(480, 480);
+	Image canvas(1024, 1024);
 
 	// Rotate sphere positions around Z-axis by theta.
 	real theta = 0;
 
-	for (unsigned int i = 0; i < 50; i++) {
-		theta += 6.283 / 50;
-		real c = cos(theta), s = sin(theta);
-		sphere2 = Sphere(Vector(7, 0, 0) + Vector(c * -2, s * -2, 0), 2.5);
-		sphere3 = Sphere(Vector(7, 0, 0) + Vector(c * 2, s * 2, 0), 2.5);
-		// End of rotation.
+	both.add(&sphere);
+	both.add(&antisphere1);
+	both.add(&antisphere2);
+	both.add(&antisphere3);
 
-		both.add(&sphere);
-		both.add(&antisphere1);
-		both.add(&antisphere2);
+	for (unsigned int i = 0; i < 100; i++) {
+		theta += 6.283 / 100;
+		real c = cos(theta), s = sin(theta);
+		sphere2 = Sphere(Vector(7, 0, 0) + Vector(c * -10, s * -10, 0), 9);
+		sphere3 = Sphere(Vector(7, 0, 0) + Vector(c * 10, s * 10, 0), 9);
+		// End of rotation.
 
 		for (unsigned int y = 0, maxY = canvas.getHeight(); y < maxY; y++) {
 			for (unsigned int x = 0, maxX = canvas.getWidth(); x < maxX; x++) {
