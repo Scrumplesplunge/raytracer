@@ -19,7 +19,7 @@ CSGIntersection both;
 
 int main(int argc, char *args[]) {
 	// Test image writing.
-	Image canvas(640, 480);
+	Image canvas(480, 480);
 
 	// Rotate sphere positions around Z-axis by theta.
 	real theta = 0;
@@ -27,8 +27,8 @@ int main(int argc, char *args[]) {
 	for (unsigned int i = 0; i < 50; i++) {
 		theta += 6.283 / 50;
 		real c = cos(theta), s = sin(theta);
-		sphere2 = Sphere(Vector(7, 0, 0) + Vector(c * -4 - s * 2, s * -4 + s * 2, 0), 2);
-		sphere3 = Sphere(Vector(7, 0, 0) + Vector(c * -4 - s * -1, s * -4 + c * -1, 0), 2);
+		sphere2 = Sphere(Vector(7, 0, 0) + Vector(c * -2, s * -2, 0), 2.5);
+		sphere3 = Sphere(Vector(7, 0, 0) + Vector(c * 2, s * 2, 0), 2.5);
 		// End of rotation.
 
 		both.add(&sphere);
@@ -37,7 +37,7 @@ int main(int argc, char *args[]) {
 
 		for (unsigned int y = 0, maxY = canvas.getHeight(); y < maxY; y++) {
 			for (unsigned int x = 0, maxX = canvas.getWidth(); x < maxX; x++) {
-				Vector rayDirection(1, 2 * real(x) / real(maxX) - 1, (1 - 2 * real(y) / real(maxY)) * 0.75);
+				Vector rayDirection(1, 2 * real(x) / real(maxX) - 1, (1 - 2 * real(y) / real(maxY)));
 				Ray ray(Vector(0, 0, 0), rayDirection, TraceRes::DISTANCE | TraceRes::NORMAL);
 				Array<TraceRes> res = both.trace(ray);
 				

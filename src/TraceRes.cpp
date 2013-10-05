@@ -12,7 +12,8 @@ TraceRes::TraceRes(const Primitive *prim) :
 {}
 
 int TraceRes::compare(TraceRes a, TraceRes b) {
-	return a.distance - b.distance;
+	if (a.distance == b.distance) return 0;
+	return a.distance < b.distance ? -1 : 1;
 }
 
 void TraceRes::print() {

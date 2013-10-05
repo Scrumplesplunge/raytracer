@@ -89,9 +89,6 @@ template <typename T> void Array<T>::increase(unsigned int desiredSize) {
 		free(data);
 	}
 
-	// Fill in the other slots with fresh instances.
-	for (unsigned int i = size; i < desiredSize; i++) tmp[i] = new T();
-
 	// Replace with the new array.
 	data = tmp;
 }
