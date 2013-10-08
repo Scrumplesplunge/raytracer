@@ -17,11 +17,25 @@ Array<TraceRes> CSGIntersection::trace(const Ray& ray) const {
 	if (contents.length() == 0) return out;
 	out = contents[0]->trace(rayCopy);
 
-	// Try each branch of the intersection.
+	// Keep track of whether the start is inside the CSGIntersection shape.
 	bool inside = contents[0]->contains(rayCopy.start);
+
+	// If there are no intersections and we aren't inside, then there is no intersection at all.
+	if (out.length() == 0 && !inside) return out;
+
 	for (unsigned int i = 1; i < contents.length(); i++) {
 		// Results from one branch, merged in with existing output.
 		Array<TraceRes> branch(contents[i]->trace(rayCopy));
+                bool isContained = contents[i]->contains(rayCopy.start);
+
+		if (branch.length() == 0) {
+			// Intersect with universe is identity.
+			if (isContained) continue;
+
+			// Intersect with empty set is empty set.
+			return branch;
+		}
+
 		Array<TraceRes> temp(out.merge(branch, TraceRes::compare));
 
 		// Meh, this vaguely resembles a semaphore.
@@ -29,7 +43,6 @@ Array<TraceRes> CSGIntersection::trace(const Ray& ray) const {
 
 		// Set the initial state of the semaphore.
 		if (inside) sem++;
-                bool isContained = contents[i]->contains(rayCopy.start);
                 if (isContained) sem++;
                 inside = inside && isContained;
 
