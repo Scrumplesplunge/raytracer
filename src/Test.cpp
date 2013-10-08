@@ -3,6 +3,7 @@
 #include "Vector.h"
 #include "Ray.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "CSGIntersection.h"
 #include "CSGComplement.h"
 #include "Array.h"
@@ -14,6 +15,7 @@ Sphere sphere(Vector(7, 0, 0), 3);
 Sphere sphere2(Vector(3, 2, 0), 2);
 Sphere sphere3(Vector(3, -1, 0), 2);
 Sphere sphere4(Vector(7, 0, 0), 2.75);
+Plane clip(Vector(5, 0, 0), Vector(-1, 0, 0));
 CSGComplement antisphere1(&sphere2);
 CSGComplement antisphere2(&sphere3);
 CSGComplement antisphere3(&sphere4);
@@ -27,12 +29,13 @@ int main(int argc, char *args[]) {
 	real theta = 0;
 
 	both.add(&sphere);
+	both.add(&clip);
 	both.add(&antisphere1);
 	both.add(&antisphere2);
 	both.add(&antisphere3);
 
-	for (unsigned int i = 0; i < 100; i++) {
-		theta += 6.283 / 100;
+	for (unsigned int i = 0; i < 50; i++) {
+		theta += 3.1416 / 50;
 		real c = cos(theta), s = sin(theta);
 		sphere2 = Sphere(Vector(7, 0, 0) + Vector(c * -10, s * -10, 0), 9);
 		sphere3 = Sphere(Vector(7, 0, 0) + Vector(c * 10, s * 10, 0), 9);
