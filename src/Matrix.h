@@ -3,10 +3,8 @@
 #include "Vector.h"
 
 class Matrix {
-	private:
+	public:
 		Vector a, b, c, d;
-
-		friend Vector operator*(const Matrix&, const Vector&);
 	public:
 		Matrix();
 		Matrix(const Vector&, const Vector&, const Vector&, const Vector&);
@@ -15,6 +13,8 @@ class Matrix {
 		Matrix rotateX(real) const;
 		Matrix rotateY(real) const;
 		Matrix rotateZ(real) const;
+
+		Vector operator()(const Vector&) const;
 };
 
 Vector operator*(const Matrix&, const Vector&);

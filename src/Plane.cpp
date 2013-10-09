@@ -17,6 +17,9 @@ Array<TraceRes> Plane::trace(const Ray& ray) const {
 	// offset = a * t + b
 	real t = (offset - b) / a;
 
+	// Negative t is not k.
+	if (t < 0) return out;
+
 	// We have found the intersection! Hoorah!
 	TraceRes hit(this);
 

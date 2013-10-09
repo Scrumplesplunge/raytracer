@@ -42,6 +42,14 @@ Matrix Matrix::rotateZ(real ang) const {
 	);
 }
 
+Vector Matrix::operator()(const Vector& v) const {
+	return Vector(
+		a.x * v.x + b.x * v.y + c.x * v.z,
+		a.y * v.x + b.y * v.y + c.y * v.z,
+		a.z * v.x + b.z * v.y + c.z * v.z
+	);
+}
+
 Vector operator*(const Matrix& m, const Vector& v) {
 	return Vector(
 		m.a.x * v.x + m.b.x * v.y + m.c.x * v.z + m.d.x,
