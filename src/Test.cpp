@@ -12,41 +12,101 @@
 #include <cmath>
 #include <iostream>
 
-Sphere sphere(Vector(0, 0, 0), 3);
-Sphere sphere2(Vector(-10, 0, 0), 9);
-Sphere sphere3(Vector(10, 0, 0), 9);
-Sphere sphere4(Vector(0, 0, 0), 2.75);
-Plane clip(Vector(-2, 0, 0), Vector(-1, 0, 0));
-CSGComplement antisphere1(&sphere2);
-CSGComplement antisphere2(&sphere3);
-CSGComplement antisphere3(&sphere4);
-CSGIntersection both;
+// Bulk shape of the die.
+Sphere sphere(Vector(0, 0, 0), 0.7071);
+Plane plane0(Vector(0, 0, 0.5), Vector(0, 0, 1));
+Plane plane1(Vector(0, 0, -0.5), Vector(0, 0, -1));
+Plane plane2(Vector(0, 0.5, 0), Vector(0, 1, 0));
+Plane plane3(Vector(0, -0.5, 0), Vector(0, -1, 0));
+Plane plane4(Vector(0.5, 0, 0), Vector(1, 0, 0));
+Plane plane5(Vector(-0.5, 0, 0), Vector(-1, 0, 0));
+
+Sphere one0_(Vector(0, 0, -0.675), 0.2);
+CSGComplement one0(&one0_);
+
+Sphere two0_(Vector(0.675, 0.225, -0.225), 0.2);
+Sphere two1_(Vector(0.675, -0.225, 0.225), 0.2);
+CSGComplement two0(&two0_);
+CSGComplement two1(&two1_);
+
+Sphere three0_(Vector(0.225, -0.675, -0.225), 0.2);
+Sphere three1_(Vector(0, -0.675, 0), 0.2);
+Sphere three2_(Vector(-0.225, -0.675, 0.225), 0.2);
+CSGComplement three0(&three0_);
+CSGComplement three1(&three1_);
+CSGComplement three2(&three2_);
+
+Sphere four0_(Vector(-0.225, 0.675, -0.225), 0.2);
+Sphere four1_(Vector(-0.225, 0.675, 0.225), 0.2);
+Sphere four2_(Vector(0.225, 0.675, 0.225), 0.2);
+Sphere four3_(Vector(0.225, 0.675, -0.225), 0.2);
+CSGComplement four0(&four0_);
+CSGComplement four1(&four1_);
+CSGComplement four2(&four2_);
+CSGComplement four3(&four3_);
+
+Sphere five0_(Vector(-0.675, -0.225, -0.225), 0.2);
+Sphere five1_(Vector(-0.675, 0.225, -0.225), 0.2);
+Sphere five2_(Vector(-0.675, 0.225, 0.225), 0.2);
+Sphere five3_(Vector(-0.675, -0.225, 0.225), 0.2);
+Sphere five4_(Vector(-0.675, 0, 0), 0.2);
+CSGComplement five0(&five0_);
+CSGComplement five1(&five1_);
+CSGComplement five2(&five2_);
+CSGComplement five3(&five3_);
+CSGComplement five4(&five4_);
+
+Sphere six0_(Vector(0.225, 0.225, 0.675), 0.2);
+Sphere six1_(Vector(0.225, 0, 0.675), 0.2);
+Sphere six2_(Vector(0.225, -0.225, 0.675), 0.2);
+Sphere six3_(Vector(-0.225, 0.225, 0.675), 0.2);
+Sphere six4_(Vector(-0.225, 0, 0.675), 0.2);
+Sphere six5_(Vector(-0.225, -0.225, 0.675), 0.2);
+CSGComplement six0(&six0_);
+CSGComplement six1(&six1_);
+CSGComplement six2(&six2_);
+CSGComplement six3(&six3_);
+CSGComplement six4(&six4_);
+CSGComplement six5(&six5_);
+
+Shape *die_parts[] = {&sphere, &plane0, &plane1, &plane2, &plane3, &plane4, &plane5, &one0, &two0, &two1, &three0, &three1, &three2, &four0, &four1, &four2, &four3, &five0, &five1, &five2, &five3, &five4, &six0, &six1, &six2, &six3, &six4, &six5};
+unsigned int num_die_parts = sizeof(die_parts) / sizeof(Shape*);
+CSGIntersection die;
 
 int main(int argc, char *args[]) {
 	// Test image writing.
 	Image canvas(512, 512);
 	Camera cam(512, 512, 1);
 
-	both.add(&sphere);
-	both.add(&clip);
-	both.add(&antisphere1);
-	both.add(&antisphere2);
-	both.add(&antisphere3);
-
+	for (unsigned int i = 0; i < num_die_parts; i++) {
+		die.add(die_parts[i]);
+	}
+	
 	real theta = 0;
-	for (unsigned int i = 0; i < 50; i++) {
-		theta += PI / 50;
+	for (unsigned int i = 0; i < 100; i++) {
+		theta += TWOPI / 100;
 		real c = cos(theta), s = sin(theta);
-		cam.moveTo(Vector(-7 * c, -7 * s, 0));
+		cam.moveTo(Vector(-2 * c, -2 * s, 0));
 		cam.lookAt(Vector());
 
 		for (unsigned int y = 0, maxY = canvas.getHeight(); y < maxY; y++) {
 			for (unsigned int x = 0, maxX = canvas.getWidth(); x < maxX; x++) {
-				Ray ray(cam.getRay(real(x) + 0.5, real(y) + 0.5, TraceRes::DISTANCE | TraceRes::ENTERING));
-				Array<TraceRes> res = both.trace(ray);
+				Ray ray(cam.getRay(real(x) + 0.5, real(y) + 0.5, TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL));
+				Array<TraceRes> res = die.trace(ray);
 
 				real dist = 0;
+				unsigned char *pix = canvas(x, y);
 				if (res.length() > 0) {
+				/*
+					pix[0] = (unsigned char)(127.9 * (res[0].normal.x + 1));
+					pix[1] = (unsigned char)(127.9 * (res[0].normal.y + 1));
+					pix[2] = (unsigned char)(127.9 * (res[0].normal.z + 1));
+				} else {
+					pix[0] = pix[1] = pix[2] = 0;
+				}
+				*/
+				
+					
 					if (res[0].entering) {
 						for (unsigned int i = 1; i < res.length(); i += 2) dist += res[i].distance - res[i - 1].distance;
 						if (res.length() & 1) dist += HUGE;
@@ -58,8 +118,8 @@ int main(int argc, char *args[]) {
 				}
 				unsigned char shade = (unsigned char)(255.9 * (1 - pow(0.5, dist)));
 				
-				unsigned char *pix = canvas(x, y);
 				pix[0] = pix[1] = pix[2] = shade;
+				
 			}
 		}
 	
