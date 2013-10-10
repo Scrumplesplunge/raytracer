@@ -82,8 +82,12 @@ void raytrace(Ray ray, unsigned char *pix, unsigned int limit = 10) {
 		return;
 	}
 
+	// Add requirements to the ray.
+	ray.mask |= TraceRes::POSITION | TraceRes::NORMAL | TraceRes::ENTERING;
+
 	Array<TraceRes> res(die.trace(ray));
 	if (res.length() == 0) {
+		
 		// Calculate colour of skybox in this direction.
 		Vector flatDir = ray.direction.setZ(0).normalized();
 		unsigned int u = (unsigned int)((sky.getWidth() - 0.5) * (flatDir.y > 0 ? acos(flatDir.x) : TWOPI - acos(flatDir.x)) / TWOPI);
@@ -92,15 +96,29 @@ void raytrace(Ray ray, unsigned char *pix, unsigned int limit = 10) {
 		pix[0] = skypix[0];
 		pix[1] = skypix[1];
 		pix[2] = skypix[2];
+		
+		//pix[0] = (unsigned char)(127.9 * (1 + ray.direction.x));
+		//pix[1] = (unsigned char)(127.9 * (1 + ray.direction.y));
+		//pix[2] = (unsigned char)(127.9 * (1 + ray.direction.z));
 	} else {
 		// Perform refraction on the ray.
 		// direction2 = direction + (refractive index 2 - refractive index 1) * normal towards direction
+		// Refractivity of glass - refractivity of air.
+		real mul = 1.5 - 1;
 		if (res[0].entering) {
-			Ray newRay(res[0].position - res[0].normal * EPSILON, ray.direction - 0.5 * res[0].normal, ray.mask);
+			// 0.5 * -normal
+			Ray newRay(res[0].position - res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
 			return raytrace(newRay, pix, limit - 1);
 		} else {
-			Ray newRay(res[0].position + res[0].normal * EPSILON, ray.direction - 0.5 * res[0].normal, ray.mask);
-			return raytrace(newRay, pix, limit - 1);
+			// -0.5 * normal
+			Ray newRay(res[0].position + res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
+			raytrace(newRay, pix, limit - 1);
+
+			// Make the glass green inside.
+			real lerp = 1 - pow(0.5, res[0].distance);
+			pix[0] = (unsigned char)(pix[0] * (1 - 0.99 * lerp));
+			pix[1] = (unsigned char)(pix[1] * (1 - 0.55 * lerp));
+			pix[2] = (unsigned char)(pix[2] * (1 - 0.6 * lerp));
 		}
 	}
 }
