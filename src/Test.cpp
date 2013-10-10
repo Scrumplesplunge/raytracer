@@ -90,7 +90,7 @@ void raytrace(Ray ray, unsigned char *pix, unsigned int limit = 10) {
 		
 		// Calculate colour of skybox in this direction.
 		Vector flatDir = ray.direction.setZ(0).normalized();
-		unsigned int u = (unsigned int)((sky.getWidth() - 0.5) * (flatDir.y > 0 ? acos(flatDir.x) : TWOPI - acos(flatDir.x)) / TWOPI);
+		unsigned int u = (unsigned int)((sky.getWidth() - 0.5) * (flatDir.y < 0 ? acos(flatDir.x) : TWOPI - acos(flatDir.x)) / TWOPI);
 		unsigned int v = (unsigned int)((sky.getHeight() - 0.5) * acos(ray.direction.z) / PI);
 		unsigned char *skypix = sky(u, v);
 		pix[0] = skypix[0];
