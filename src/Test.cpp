@@ -115,10 +115,9 @@ void raytrace(Ray ray, unsigned char *pix, unsigned int limit = 10) {
 			raytrace(newRay, pix, limit - 1);
 
 			// Make the glass green inside.
-			real lerp = 1 - pow(0.5, res[0].distance);
-			pix[0] = (unsigned char)(pix[0] * (1 - 0.99 * lerp));
-			pix[1] = (unsigned char)(pix[1] * (1 - 0.55 * lerp));
-			pix[2] = (unsigned char)(pix[2] * (1 - 0.6 * lerp));
+			pix[0] = (unsigned char)(pix[0] * pow(0.9, res[0].distance));
+			pix[1] = (unsigned char)(pix[1] * pow(0.9, res[0].distance));
+			pix[2] = (unsigned char)(pix[2] * pow(0.8, res[0].distance));
 		}
 	}
 }
