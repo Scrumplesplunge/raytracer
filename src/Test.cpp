@@ -76,8 +76,14 @@ Image canvas(512, 512);
 Image sky("assets/sky.bmp");
 
 void raytrace(Ray ray, unsigned char *pix, unsigned int limit = 10) {
+	if (limit == 0) {
+		// Total internal reflection.
+		pix[0] = pix[1] = pix[2] = 0;
+		return;
+	}
+
 	Array<TraceRes> res(die.trace(ray));
-	if (res.length() == 0 || limit == 0) {
+	if (res.length() == 0) {
 		// Calculate colour of skybox in this direction.
 		Vector flatDir = ray.direction.setZ(0).normalized();
 		unsigned int u = (unsigned int)((sky.getWidth() - 0.5) * (flatDir.y > 0 ? acos(flatDir.x) : TWOPI - acos(flatDir.x)) / TWOPI);
