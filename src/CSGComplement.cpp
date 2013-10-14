@@ -1,4 +1,5 @@
 #include "CSGComplement.h"
+#include "Config.h"
 
 CSGComplement::CSGComplement(const Shape *shape) : contents(shape) {}
 
@@ -30,5 +31,29 @@ bool CSGComplement::contains(const Vector& vec) const {
 
 const char *CSGComplement::name() const {
 	return "CSG Complement";
+}
+
+real CSGComplement::minX() const {
+	return -INFINITY;
+}
+
+real CSGComplement::minY() const {
+	return -INFINITY;
+}
+
+real CSGComplement::minZ() const {
+	return -INFINITY;
+}
+
+real CSGComplement::maxX() const {
+	return INFINITY;
+}
+
+real CSGComplement::maxY() const {
+	return INFINITY;
+}
+
+real CSGComplement::maxZ() const {
+	return INFINITY;
 }
 

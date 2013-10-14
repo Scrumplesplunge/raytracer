@@ -1,4 +1,5 @@
 #include "CSGIntersection.h"
+#include "Config.h"
 
 CSGIntersection::CSGIntersection() {}
 
@@ -77,5 +78,59 @@ bool CSGIntersection::contains(const Vector& vec) const {
 
 const char *CSGIntersection::name() const {
 	return "CSG Intersection";
+}
+
+real CSGIntersection::minX() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->minX();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGIntersection::minY() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->minY();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGIntersection::minZ() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->minZ();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGIntersection::maxX() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->maxX();
+		out = out < temp ? temp : out;
+	}
+	return out;
+}
+
+real CSGIntersection::maxY() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->maxY();
+		out = out < temp ? temp : out;
+	}
+	return out;
+}
+
+real CSGIntersection::maxZ() const {
+	real out = INFINITY;
+	for (unsigned int i = contents.length(); i --> 0;) {
+		real temp = contents[i]->maxZ();
+		out = out < temp ? temp : out;
+	}
+	return out;
 }
 

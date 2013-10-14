@@ -165,11 +165,11 @@ int main(int argc, char *args[]) {
 					
 					if (res[0].entering) {
 						for (unsigned int i = 1; i < res.length(); i += 2) dist += res[i].distance - res[i - 1].distance;
-						if (res.length() & 1) dist += HUGE;
+						if (res.length() & 1) dist += INFINITY;
 					} else {
 						dist += res[0].distance;
 						for (unsigned int i = 2; i < res.length(); i += 2) dist += res[i].distance - res[i - 1].distance;
-						if (res.length() & 1 == 0) dist += HUGE;
+						if (res.length() & 1 == 0) dist += INFINITY;
 					}
 				}
 				unsigned char shade = (unsigned char)(255.9 * (1 - pow(0.5, dist)));

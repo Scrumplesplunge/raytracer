@@ -1,14 +1,12 @@
 #pragma once
 #include "Vector.h"
+#include "Shape.h"
 
 class KDTree : public Shape {
 	private:
 		real split;
-		enum SplitDirection {
-			SPLIT_X,
-			SPLIT_Y
-			SPLIT_Z
-		} splitDirection;
+		char splitDirection;
+		Array<Shape*> a, b;
 	public:
 		
 };

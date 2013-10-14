@@ -1,4 +1,5 @@
 #include "CSGUnion.h"
+#include "Config.h"
 
 CSGUnion::CSGUnion() {}
 
@@ -60,5 +61,59 @@ bool CSGUnion::contains(const Vector& vec) const {
 
 const char *CSGUnion::name() const {
 	return "CSG Union";
+}
+
+real CSGUnion::minX() const {
+	real out = INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->minX();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGUnion::minY() const {
+	real out = INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->minY();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGUnion::minZ() const {
+	real out = INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->minZ();
+		out = temp < out ? temp : out;
+	}
+	return out;
+}
+
+real CSGUnion::maxX() const {
+	real out = -INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->maxX();
+		out = out < temp ? temp : out;
+	}
+	return out;
+}
+
+real CSGUnion::maxY() const {
+	real out = -INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->maxY();
+		out = out < temp ? temp : out;
+	}
+	return out;
+}
+
+real CSGUnion::maxZ() const {
+	real out = -INFINITY;
+	for (unsigned int i = 0; i < contents.length(); i++) {
+		real temp = contents[i]->maxZ();
+		out = out < temp ? temp : out;
+	}
+	return out;
 }
 
