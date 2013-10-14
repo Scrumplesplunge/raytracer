@@ -321,7 +321,7 @@ unsigned int Image::getHeight() const {
 	return height;
 }
 
-unsigned char *Image::operator()(unsigned int x, unsigned int y) {
+unsigned char *Image::operator()(unsigned int x, unsigned int y) const {
 	if (x < 0 || width <= x || y < 0 || height <= y) return NULL;
 	return data + 3 * (width * y + x);
 }
@@ -337,6 +337,23 @@ int comp(const char* a, const char* b) {
 	if (*a == 0 && *b != 0) return -1;
 	if (*a != 0 && *b == 0) return 1;
 	return 0;
+}
+
+void Image::draw(const Image& source, unsigned int x, unsigned int y) {
+	unsigned int maxX = x + source.getWidth();
+	unsigned int maxY = y + source.getHeight();
+	maxX = maxX < width ? maxX : width;
+	maxY = maxY < height ? maxY : height;
+
+	for (unsigned int yi = y; yi < maxY; yi++) {
+		for (unsigned int xi = x; xi < maxX; xi++) {
+			unsigned char *dst = operator()(xi, yi);
+			unsigned char *src = source(xi - x, yi - y);
+			dst[0] = src[0];
+			dst[1] = src[1];
+			dst[2] = src[2];
+		}
+	}
 }
 
 void Image::load(const char *filename) {

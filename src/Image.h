@@ -39,7 +39,10 @@ class Image {
 		// Pixel access.
 		unsigned int getWidth() const;
 		unsigned int getHeight() const;
-		unsigned char *operator()(unsigned int, unsigned int);
+		unsigned char *operator()(unsigned int, unsigned int) const;
+
+		// Manipulation.
+		void draw(const Image&, unsigned int, unsigned int);
 
 		// File I/O
 		void load(const char*);

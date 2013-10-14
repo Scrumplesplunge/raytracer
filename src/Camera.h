@@ -6,12 +6,16 @@
 class Camera {
 	private:
 		Matrix transform;
-		real width, height, mul;
+		unsigned int width, height;
+		real mul;
 	public:
 		Camera(unsigned int, unsigned int, real);
 
 		void moveTo(const Vector&);
-		void lookAt(const Vector&);		
+		void lookAt(const Vector&);
+
+		unsigned int getWidth() const;
+		unsigned int getHeight() const;
 
 		Ray getRay(real, real, unsigned int);
 };

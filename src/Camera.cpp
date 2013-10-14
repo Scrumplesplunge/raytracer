@@ -17,6 +17,14 @@ void Camera::lookAt(const Vector& pos) {
 	transform.c = cross(transform.b, transform.a);
 }
 
+unsigned int Camera::getWidth() const {
+	return width;
+}
+
+unsigned int Camera::getHeight() const {
+	return height;
+}
+
 Ray Camera::getRay(real x, real y, unsigned int mask) {
 	real big = width > height ? width : height;
 	Vector direction(transform(Vector(1, mul * (2 * x - width) / big, mul * (height - 2 * y) / big)));
