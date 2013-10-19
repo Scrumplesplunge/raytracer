@@ -75,13 +75,13 @@ unsigned int num_die_parts = sizeof(die_parts) / sizeof(Shape*);
 CSGIntersection die;
 Image sky("assets/sky.bmp");
 
-Vector raytrace(Ray ray, unsigned int limit) {
+Vector raytrace(Shape *shape, Ray ray, unsigned int limit) {
 	if (limit == 0) return Vector();
 
 	// Add requirements to the ray.
 	ray.mask |= TraceRes::POSITION | TraceRes::NORMAL | TraceRes::ENTERING;
 
-	Array<TraceRes> res(die.trace(ray));
+	Array<TraceRes> res(shape->trace(ray));
 	if (res.length() == 0) {
 		// Calculate colour of skybox in this direction.
 		Vector flatDir = ray.direction.setZ(0).normalized();
@@ -97,11 +97,11 @@ Vector raytrace(Ray ray, unsigned int limit) {
 		if (res[0].entering) {
 			// 0.5 * -normal
 			Ray newRay(res[0].position - res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
-			return raytrace(newRay, limit - 1);
+			return raytrace(shape, newRay, limit - 1);
 		} else {
 			// -0.5 * normal
 			Ray newRay(res[0].position + res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
-			Vector temp = raytrace(newRay, limit - 1);
+			Vector temp = raytrace(shape, newRay, limit - 1);
 
 			// Make the glass green inside.
 			return Vector(temp.x * pow(0.8, res[0].distance), temp.y * pow(0.9, res[0].distance), temp.z * pow(0.9, res[0].distance));
@@ -109,8 +109,8 @@ Vector raytrace(Ray ray, unsigned int limit) {
 	}
 }
 
-Vector raytrace(Ray ray) {
-	return raytrace(ray, 10);
+Vector raytrace(Shape *shape, Ray ray) {
+	return raytrace(shape, ray, 10);
 }
 
 int main(int argc, char *args[]) {
@@ -136,7 +136,7 @@ int main(int argc, char *args[]) {
 		cam.moveTo(Vector(-2 * c, -2 * s, 0));
 		cam.lookAt(Vector());
 
-		Image canvas(render(&cam, &die));
+		Image canvas(render(&die, &cam));
 	
 		// Save the image.
 		char filename[11] = {'t', 'e', 's', 't', '0', '0', '.', 'b', 'm', 'p', '\0'};

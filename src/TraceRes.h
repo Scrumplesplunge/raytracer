@@ -11,6 +11,7 @@ class TraceRes {
 		Vector position, normal;
 		real distance;
 		bool entering;
+		real refractiveIndex1, refractiveIndex2;
 
 		static const int
 			PRIMITIVE	= 0x00000001,

@@ -1,7 +1,7 @@
 #include "Render.h"
 #include "Ray.h"
 
-Render::Render(Vector (*renderPixelFunc)(Ray)) :
+Render::Render(Vector (*renderPixelFunc)(Shape*, Ray)) :
 	renderPixel(renderPixelFunc),
 	currentChunk(0),
 	numChunks(0),
@@ -14,7 +14,7 @@ Render::Render(Vector (*renderPixelFunc)(Ray)) :
 	baseMask(TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL)
 {}
 
-Image Render::operator()(Camera *camPtr, Shape *shapePtr) {
+Image Render::operator()(Shape *shapePtr, Camera *camPtr) {
 	output = Image(camPtr->getWidth(), camPtr->getHeight());
 
 	cam = camPtr;
@@ -56,7 +56,7 @@ void Render::RenderChunk(Render* parent) {
 				for (unsigned int aay = 0, aaymax = parent->subPixelsY; aay < aaymax; aay++) {
 					for (unsigned int aax = 0, aaxmax = parent->subPixelsX; aax < aaxmax; aax++) {
 						Ray ray(parent->cam->getRay(xi + (real(aax) + 0.5) / aaxmax, yi + (real(aay) + 0.5) / aaymax, parent->baseMask));
-						color = color + parent->renderPixel(ray);
+						color = color + parent->renderPixel(parent->shape, ray);
 					}
 				}
 				color = color / (parent->subPixelsX * parent->subPixelsY);

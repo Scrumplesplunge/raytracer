@@ -10,7 +10,7 @@
 
 class Render {
 	private:
-		Vector (*renderPixel)(Ray);
+		Vector (*renderPixel)(Shape*, Ray);
 
 		unsigned int
 			currentChunk,
@@ -30,10 +30,10 @@ class Render {
 			chunkHeight,
 			baseMask;
 	public:
-		Render(Vector (*)(Ray));
+		Render(Vector (*)(Shape*, Ray));
 
 		static void RenderChunk(Render*);
 		
-		Image operator()(Camera*, Shape*);
+		Image operator()(Shape*, Camera*);
 };
 
