@@ -1,78 +1,17 @@
 #include "Config.h"
 #include "Image.h"
 #include "Vector.h"
+#include "Matrix.h"
 #include "Ray.h"
-#include "Sphere.h"
-#include "Plane.h"
-#include "CSGIntersection.h"
-#include "CSGComplement.h"
 #include "Array.h"
+#include "Die.h"
 #include "TraceRes.h"
 #include "Camera.h"
 #include "Render.h"
 #include <cmath>
 #include <iostream>
 
-// Bulk shape of the die.
-Sphere sphere(Vector(0, 0, 0), 0.7071);
-Plane plane0(Vector(0, 0, 0.5), Vector(0, 0, 1));
-Plane plane1(Vector(0, 0, -0.5), Vector(0, 0, -1));
-Plane plane2(Vector(0, 0.5, 0), Vector(0, 1, 0));
-Plane plane3(Vector(0, -0.5, 0), Vector(0, -1, 0));
-Plane plane4(Vector(0.5, 0, 0), Vector(1, 0, 0));
-Plane plane5(Vector(-0.5, 0, 0), Vector(-1, 0, 0));
-
-Sphere one0_(Vector(0, 0, -0.675), 0.2);
-CSGComplement one0(&one0_);
-
-Sphere two0_(Vector(0.675, 0.225, -0.225), 0.2);
-Sphere two1_(Vector(0.675, -0.225, 0.225), 0.2);
-CSGComplement two0(&two0_);
-CSGComplement two1(&two1_);
-
-Sphere three0_(Vector(0.225, -0.675, -0.225), 0.2);
-Sphere three1_(Vector(0, -0.675, 0), 0.2);
-Sphere three2_(Vector(-0.225, -0.675, 0.225), 0.2);
-CSGComplement three0(&three0_);
-CSGComplement three1(&three1_);
-CSGComplement three2(&three2_);
-
-Sphere four0_(Vector(-0.225, 0.675, -0.225), 0.2);
-Sphere four1_(Vector(-0.225, 0.675, 0.225), 0.2);
-Sphere four2_(Vector(0.225, 0.675, 0.225), 0.2);
-Sphere four3_(Vector(0.225, 0.675, -0.225), 0.2);
-CSGComplement four0(&four0_);
-CSGComplement four1(&four1_);
-CSGComplement four2(&four2_);
-CSGComplement four3(&four3_);
-
-Sphere five0_(Vector(-0.675, -0.225, -0.225), 0.2);
-Sphere five1_(Vector(-0.675, 0.225, -0.225), 0.2);
-Sphere five2_(Vector(-0.675, 0.225, 0.225), 0.2);
-Sphere five3_(Vector(-0.675, -0.225, 0.225), 0.2);
-Sphere five4_(Vector(-0.675, 0, 0), 0.2);
-CSGComplement five0(&five0_);
-CSGComplement five1(&five1_);
-CSGComplement five2(&five2_);
-CSGComplement five3(&five3_);
-CSGComplement five4(&five4_);
-
-Sphere six0_(Vector(0.225, 0.225, 0.675), 0.2);
-Sphere six1_(Vector(0.225, 0, 0.675), 0.2);
-Sphere six2_(Vector(0.225, -0.225, 0.675), 0.2);
-Sphere six3_(Vector(-0.225, 0.225, 0.675), 0.2);
-Sphere six4_(Vector(-0.225, 0, 0.675), 0.2);
-Sphere six5_(Vector(-0.225, -0.225, 0.675), 0.2);
-CSGComplement six0(&six0_);
-CSGComplement six1(&six1_);
-CSGComplement six2(&six2_);
-CSGComplement six3(&six3_);
-CSGComplement six4(&six4_);
-CSGComplement six5(&six5_);
-
-Shape *die_parts[] = {&sphere, &plane0, &plane1, &plane2, &plane3, &plane4, &plane5, &one0, &two0, &two1, &three0, &three1, &three2, &four0, &four1, &four2, &four3, &five0, &five1, &five2, &five3, &five4, &six0, &six1, &six2, &six3, &six4, &six5};
-unsigned int num_die_parts = sizeof(die_parts) / sizeof(Shape*);
-CSGIntersection die;
+Die die(Matrix(Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), Vector(0, 0, 0)));
 Image sky("assets/sky.bmp");
 
 Vector raytrace(Shape *shape, Ray ray, unsigned int limit) {
@@ -121,10 +60,6 @@ int main(int argc, char *args[]) {
 	}
 
 	Camera cam(512, 512, 1);
-
-	for (unsigned int i = 0; i < num_die_parts; i++) {
-		die.add(die_parts[i]);
-	}
 
 	Render render(raytrace);
 	render.numThreads = 4;
