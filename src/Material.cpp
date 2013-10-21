@@ -7,8 +7,7 @@ Vector Material::refract(const Vector& vec, const Vector& norm, real refractiveI
 }
 
 Vector Material::reflect(const Vector& vec, const Vector& norm) {
-	real mul = 2 * dot(vec, norm);
-	return 2 * vec - norm * mul;
+	return vec - norm * (2 * dot(norm, vec));
 }
 
 Material::Fresnel Material::fresnel(const Vector& vec, const Vector& norm, real refractiveIndex1, real refractiveIndex2) {
@@ -21,7 +20,7 @@ Material::Fresnel Material::fresnel(const Vector& vec, const Vector& norm, real 
 	real sPolarReflect = (refractiveIndex1 * cosI - refractiveIndex2 * cosT) / (refractiveIndex1 * cosI + refractiveIndex2 * cosT);
 	sPolarReflect *= sPolarReflect;
 	real pPolarReflect = (refractiveIndex1 * cosT - refractiveIndex2 * cosI) / (refractiveIndex1 * cosT + refractiveIndex2 * cosI);
-	sPolarReflect *= sPolarReflect;
+	pPolarReflect *= pPolarReflect;
 	out.weight = (sPolarReflect + pPolarReflect) / 2;
 	if (out.weight > 1) out.weight = 1;
 

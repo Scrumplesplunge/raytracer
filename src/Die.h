@@ -4,6 +4,7 @@
 #include "CSGComplement.h"
 #include "CSGIntersection.h"
 #include "Matrix.h"
+#include "Material.h"
 
 class Die : public CSGIntersection {
 	private:
@@ -15,6 +16,6 @@ class Die : public CSGIntersection {
 				four1, four2, four3, five0, five1, five2, five3,
 				five4, six0, six1, six2, six3, six4, six5;
 	public:
-		Die(const Matrix&);
+		Die(const Matrix&, Material*);
 };
 

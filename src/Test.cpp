@@ -5,51 +5,41 @@
 #include "Ray.h"
 #include "Array.h"
 #include "Die.h"
+#include "Plane.h"
+#include "Sphere.h"
+#include "CSGUnion.h"
 #include "TraceRes.h"
 #include "Camera.h"
 #include "Render.h"
+#include "Glass.h"
+#include "Diffuse.h"
+#include "Light.h"
 #include <cmath>
 #include <iostream>
 
-Die die(Matrix(Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), Vector(0, 0, 0)));
+Glass glass(Vector(0.8, 0.9, 0.9));
+Diffuse white(0.5, Vector(1, 1, 1)), red(0.5, Vector(1, 0, 0)), green(0.5, Vector(0, 1, 0)), black(1, Vector(0, 0, 0));
+Light light(Vector(100, 100, 100));
+
+Die die(Matrix(Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), Vector(0, 0, 0)), &white);
+Sphere lightSource(Vector(1, 1, 3.5), 0.5);
+Plane box_floor(Vector(0, 0, -0.5 - EPSILON), Vector(0, 0, 1));
+Plane box_ceil(Vector(0, 0, 3.5), Vector(0, 0, -1));
+Plane box_wall_left(Vector(0, 2, 0), Vector(0, -1, 0));
+Plane box_wall_right(Vector(0, -2, 0), Vector(0, 1, 0));
+Plane box_wall_far(Vector(2, 0, 0), Vector(-1, 0, 0));
+Plane box_wall_behind(Vector(-20, 0, 0), Vector(1, 0, 0));
+CSGUnion room;
+
 Image sky("assets/sky.bmp");
 
-Vector raytrace(Shape *shape, Ray ray, unsigned int limit) {
-	if (limit == 0) return Vector();
-
-	// Add requirements to the ray.
-	ray.mask |= TraceRes::POSITION | TraceRes::NORMAL | TraceRes::ENTERING;
-
-	Array<TraceRes> res(shape->trace(ray));
+Vector raytrace(Shape *scene, Ray ray) {
+	Array<TraceRes> res(scene->trace(ray));
 	if (res.length() == 0) {
-		// Calculate colour of skybox in this direction.
-		Vector flatDir = ray.direction.setZ(0).normalized();
-		unsigned int u = (unsigned int)((sky.getWidth() - 0.5) * (flatDir.y < 0 ? acos(flatDir.x) : TWOPI - acos(flatDir.x)) / TWOPI);
-		unsigned int v = (unsigned int)((sky.getHeight() - 0.5) * acos(ray.direction.z) / PI);
-		unsigned char *skypix = sky(u, v);
-		return Vector(real(skypix[2]) / 255, real(skypix[1]) / 255, real(skypix[0]) / 255);
+		return Vector();
 	} else {
-		// Perform refraction on the ray.
-		// direction2 = direction + (refractive index 2 - refractive index 1) * normal towards direction
-		// Refractivity of glass - refractivity of air.
-		real mul = 1.5 - 1;
-		if (res[0].entering) {
-			// 0.5 * -normal
-			Ray newRay(res[0].position - res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
-			return raytrace(shape, newRay, limit - 1);
-		} else {
-			// -0.5 * normal
-			Ray newRay(res[0].position + res[0].normal * EPSILON, ray.direction - mul * res[0].normal, ray.mask);
-			Vector temp = raytrace(shape, newRay, limit - 1);
-
-			// Make the glass green inside.
-			return Vector(temp.x * pow(0.8, res[0].distance), temp.y * pow(0.9, res[0].distance), temp.z * pow(0.9, res[0].distance));
-		}
+		return res[0].primitive->material->outgoingLight(scene, res[0], -ray.direction, 1);
 	}
-}
-
-Vector raytrace(Shape *shape, Ray ray) {
-	return raytrace(shape, ray, 10);
 }
 
 int main(int argc, char *args[]) {
@@ -59,24 +49,38 @@ int main(int argc, char *args[]) {
 		return 1;
 	}
 
-	Camera cam(512, 512, 1);
+	lightSource.material = &light;
 
-	Render render(raytrace);
+	box_ceil.material = box_floor.material = box_wall_far.material = &white;
+	box_wall_behind.material = &white;
+	box_wall_left.material = &red;
+	box_wall_right.material = &green;
+
+	room.add(&lightSource);
+	room.add(&die);
+	room.add(&box_floor);
+	room.add(&box_ceil);
+	room.add(&box_wall_left);
+	room.add(&box_wall_right);
+	room.add(&box_wall_far);
+	room.add(&box_wall_behind);
+
+	Camera cam(512, 512, 1.7);
+	cam.moveTo(Vector(-3, 0, 0.2));
+
+	Render render(raytrace, &room, cam);
 	render.numThreads = 4;
-	
-	real theta = 0;
-	for (unsigned int i = 0; i < 100; i++) {
-		theta += TWOPI / 100;
-		real c = cos(theta), s = sin(theta);
-		cam.moveTo(Vector(-2 * c, -2 * s, 0));
-		cam.lookAt(Vector());
+	render.subPixelsX = 1;
+	render.subPixelsY = 1;
 
-		Image canvas(render(&die, &cam));
-	
+	for (unsigned int i = 0; i < 1000; i++) {
+		Image canvas(render());
+		
 		// Save the image.
-		char filename[11] = {'t', 'e', 's', 't', '0', '0', '.', 'b', 'm', 'p', '\0'};
-		filename[4] = '0' + i / 10;
-		filename[5] = '0' + i % 10;
+		char filename[12] = {'t', 'e', 's', 't', '0', '0', '0', '.', 'b', 'm', 'p', '\0'};
+		filename[4] = '0' + i / 100;
+		filename[5] = '0' + (i / 10) % 10;
+		filename[6] = '0' + i % 10;
 		std::cout << "Saving " << filename << ".. ";
 		if (!canvas.save(filename)) {
 			canvas.printError();
@@ -84,7 +88,7 @@ int main(int argc, char *args[]) {
 		}
 		std::cout << "Done." << std::endl;
 	}
-	
+
 	return 0;
 }
 

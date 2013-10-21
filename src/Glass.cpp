@@ -2,40 +2,40 @@
 #include "Ray.h"
 #include "Primitive.h"
 #include <cmath>
+#include "Random.h"
+
+std::uniform_real_distribution<real> random_real(0, 1);
+
+Glass::Glass(const Vector& col) : color(col) {}
 
 Vector Glass::outgoingLight(Shape *scene, const TraceRes& hit, const Vector& direction, real significance) const {
 	// Be really lazy if the significance is low enough.
 	if (significance < SIGNIFICANCE) return Vector();
 
-	Fresnel children(fresnel(-direction, hit.normal, hit.refractiveIndex1, hit.refractiveIndex2));
-
-	// Output colour.
-	Vector output;
+	Fresnel children = hit.entering ? fresnel(-direction, hit.normal, 1, 1.53) : fresnel(-direction, -hit.normal, 1.53, 1);
 	
-	// Trace the refractive ray.
-	Ray refractiveRay(hit.position - hit.normal * EPSILON, children.refract, TraceRes::ALL);
-	Array<TraceRes> res(scene->trace(refractiveRay));
-	if (res.length() > 0) {
-		Vector temp = res[0].primitive->material->outgoingLight(scene, res[0], -children.refract, significance * (1 - children.weight));
-		Vector colorized(temp.x * pow(0.8, res[0].distance), temp.y * pow(0.9, res[0].distance), temp.z * pow(0.9, res[0].distance));
-		output = output + colorized * (1 - children.weight);
+	real rand = random_real(random_generator);
+	if (rand <= children.weight) {
+	 	// Trace the reflective ray.
+		Ray reflectiveRay(hit.position + (hit.entering ? hit.normal : -hit.normal) * EPSILON, children.reflect, TraceRes::ALL);
+		Array<TraceRes> res2(scene->trace(reflectiveRay));
+		if (res2.length() > 0) {
+			Vector temp = res2[0].primitive->material->outgoingLight(scene, res2[0], -children.reflect, significance * children.weight);
+			Vector colorized(temp.x * color.x, temp.y * color.y, temp.z * color.z);
+			return colorized;
+		}
+	} else {
+		// Trace the refractive ray.
+		Ray refractiveRay(hit.position + (hit.entering ? -hit.normal : hit.normal) * EPSILON, children.refract, TraceRes::ALL);
+		Array<TraceRes> res(scene->trace(refractiveRay));
+		if (res.length() > 0) {
+			Vector temp = res[0].primitive->material->outgoingLight(scene, res[0], -children.refract, significance * (1 - children.weight));
+			Vector colorized(temp.x * pow(color.x, res[0].distance), temp.y * pow(color.y, res[0].distance), temp.z * pow(color.z, res[0].distance));
+			return colorized;
+		}
 	}
 
-	// Trace the reflective ray.
-	Ray reflectiveRay(hit.position + hit.normal * EPSILON, children.reflect, TraceRes::ALL);
-	Array<TraceRes> res2(scene->trace(reflectiveRay));
-	if (res.length() > 0) {
-		Vector temp = res[0].primitive->material->outgoingLight(scene, res[0], -children.reflect, significance * children.weight);
-		Vector colorized(temp.x * 0.8, temp.y * 0.9, temp.z * 0.9);
-		output = output + children.weight * colorized;
-	}
-
-	// Return the resultant colour.
-	return output;
-}
-
-real Glass::refractiveIndex() const {
-	return 1.52;
+	return Vector();
 }
 
 const char *Glass::name() const {

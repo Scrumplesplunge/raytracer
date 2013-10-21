@@ -14,11 +14,14 @@ class Render {
 
 		unsigned int
 			currentChunk,
-			numChunks;
+			numChunks,
+			numPasses;
+
+		Vector *buffer;
 		Image output;
 
-		Camera* cam;
-		Shape* shape;
+		Camera cam;
+		Shape *shape;
 
 		std::mutex mtx;
 	public:
@@ -30,10 +33,11 @@ class Render {
 			chunkHeight,
 			baseMask;
 	public:
-		Render(Vector (*)(Shape*, Ray));
+		Render(Vector (*)(Shape*, Ray), Shape*, Camera);
+		~Render();
 
 		static void RenderChunk(Render*);
 		
-		Image operator()(Shape*, Camera*);
+		Image operator()();
 };
 

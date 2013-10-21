@@ -1,6 +1,6 @@
 #include "Die.h"
 
-Die::Die(const Matrix& orientation) :
+Die::Die(const Matrix& orientation, Material *material) :
 	sphere(orientation * Vector(0, 0, 0), SQRT2_2), one0_(orientation * Vector(0, 0, -0.675), 0.2),
 	two0_(orientation * Vector(0.675, 0.225, -0.225), 0.2), two1_(orientation * Vector(0.675, -0.225, 0.225), 0.2),
 	three0_(orientation * Vector(0.225, -0.675, -0.225), 0.2), three1_(orientation * Vector(0, -0.675, 0), 0.2),
@@ -19,9 +19,28 @@ Die::Die(const Matrix& orientation) :
 	four2(&four2_), four3(&four3_), five0(&five0_), five1(&five1_), five2(&five2_), five3(&five3_), five4(&five4_), six0(&six0_),
 	six1(&six1_), six2(&six2_), six3(&six3_), six4(&six4_), six5(&six5_)
 {
-	add(&sphere); add(&plane0); add(&plane1); add(&plane2); add(&plane3); add(&plane4); add(&plane5);
-	add(&one0); add(&two0); add(&two1); add(&three0); add(&three1); add(&three2); add(&four0); add(&four1);
-	add(&four2); add(&four3); add(&five0); add(&five1); add(&five2); add(&five3); add(&five4); add(&six0);
-	add(&six1); add(&six2); add(&six3); add(&six4); add(&six5);
+	Primitive *primitives[] = {
+		&sphere,	&one0_,		&two0_,		&two1_,
+		&three0_,	&three1_,	&three2_,	&four0_,
+		&four1_,	&four2_,	&four3_,	&five0_,
+		&five1_,	&five2_,	&five3_,	&five4_,
+		&six0_,		&six1_,		&six2_,		&six3_,
+		&six4_,		&six5_,		&plane0,	&plane1,
+		&plane2,	&plane3,	&plane4,	&plane5
+	};
+	unsigned int num_primitives = sizeof(primitives) / sizeof(Primitive*);
+	for (unsigned int i = 0; i < num_primitives; i++) primitives[i]->material = material;
+
+	Shape *intersected[] = {
+		&sphere,	&plane0,	&plane1,	&plane2,
+		&plane3,	&plane4,	&plane5,	&one0,
+		&two0,		&two1,		&three0,	&three1,
+		&three2,	&four0,		&four1,		&four2,
+		&four3,		&five0,		&five1,		&five2,
+		&five3,		&five4,		&six0,		&six1,
+		&six2,		&six3,		&six4,		&six5
+	};
+	unsigned int num_intersected = sizeof(intersected) / sizeof(Shape*);
+	for (unsigned int i = 0; i < num_intersected; i++) add(intersected[i]);
 }
 

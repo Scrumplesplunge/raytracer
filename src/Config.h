@@ -8,3 +8,4 @@ const real TWOPI = 6.283185307179586;
 const real SQRT2 = 1.4142135623730951;
 const real SQRT2_2 = 0.7071067811865476;
 const real INFINITY = 1e25;
+

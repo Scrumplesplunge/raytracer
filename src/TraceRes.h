@@ -11,7 +11,6 @@ class TraceRes {
 		Vector position, normal;
 		real distance;
 		bool entering;
-		real refractiveIndex1, refractiveIndex2;
 
 		static const int
 			PRIMITIVE	 = 0x00000001,
@@ -19,8 +18,6 @@ class TraceRes {
 			NORMAL		 = 0x00000004,
 			DISTANCE	 = 0x00000008,
 			ENTERING	 = 0x00000010,
-			REFRACTIVEINDEX1 = 0x00000020,
-			REFRACTIVEINDEX2 = 0x00000040,
 			ALL		 = 0xffffffff;
 
 		static int compare(TraceRes, TraceRes);

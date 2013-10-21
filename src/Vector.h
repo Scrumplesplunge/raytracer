@@ -15,6 +15,8 @@ class Vector {
 		Vector normalized() const;
 		real squareLength() const;
 		real length() const;
+
+		static Vector random();
 };
 
 Vector operator+(const Vector&, const Vector&);

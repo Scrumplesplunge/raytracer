@@ -1,5 +1,8 @@
 #include "Vector.h"
 #include <cmath>
+#include "Random.h"
+
+std::normal_distribution<real> vector_rand(0, 1);
 
 Vector::Vector() : x(0), y(0), z(0) {}
 
@@ -27,6 +30,10 @@ real Vector::squareLength() const {
 
 real Vector::length() const {
 	return sqrt(squareLength());
+}
+
+Vector Vector::random() {
+	return Vector(vector_rand(random_generator), vector_rand(random_generator), vector_rand(random_generator)).normalized();
 }
 
 Vector operator+(const Vector& a, const Vector& b) {
