@@ -3,6 +3,7 @@
 typedef double real;
 const real EPSILON = 0.00001;
 const real SIGNIFICANCE = 1e-3;
+const real HALFPI = 1.5707963267948966;
 const real PI = 3.141592653589793238463;
 const real TWOPI = 6.283185307179586;
 const real SQRT2 = 1.4142135623730951;

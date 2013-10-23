@@ -14,12 +14,14 @@
 #include "Glass.h"
 #include "Diffuse.h"
 #include "Light.h"
+#include "Sky.h"
 #include <cmath>
 #include <iostream>
 
 Glass glass(Vector(0.8, 0.9, 0.9));
 Diffuse white(1, Vector(1, 1, 1)), red(1, Vector(1, 0.1, 0)), green(1, Vector(0.1, 1, 0));
 Light light(Vector(1, 1, 1));
+Sky sky("assets/sky.bmp");
 
 Die die(Matrix(Vector(0.9511, 0.3090, 0), Vector(-0.3090, 0.9511, 0), Vector(0, 0, 1), Vector(-1, -0.6, 0)), &glass);
 Die die2(Matrix(Vector(0.9511, -0.3090, 0), Vector(0.3090, 0.9511, 0), Vector(0, 0, 1), Vector(-0.5, 0.6, 0)), &white);
@@ -33,8 +35,6 @@ Plane box_wall_right(Vector(0, -2, 0), Vector(0, 1, 0));
 Plane box_wall_far(Vector(2, 0, 0), Vector(-1, 0, 0));
 Plane box_wall_behind(Vector(-10.1, 0, 0), Vector(1, 0, 0));
 CSGUnion room;
-
-Image sky("assets/sky.bmp");
 
 Vector raytrace(Shape *scene, Ray ray) {
 	Array<TraceRes> res(scene->trace(ray));
@@ -52,12 +52,13 @@ int main(int argc, char *args[]) {
 		return 1;
 	}
 
-	source.material = &light;
-	box_ceil.material = box_wall_far.material = box_floor.material = box_wall_behind.material = &white;
+	//source.material = &light;
+	box_wall_far.material = &sky;
+	box_ceil.material = box_floor.material = box_wall_behind.material = &white;
 	box_wall_left.material = &red;
 	box_wall_right.material = &green;
 
-	room.add(&source);
+	//room.add(&source);
 	room.add(&die);
 	room.add(&die2);
 	room.add(&box_floor);
@@ -68,15 +69,15 @@ int main(int argc, char *args[]) {
 	room.add(&box_wall_behind);
 
 	Camera cam(1920, 1080, 0.8);
-	cam.moveTo(Vector(-7, 1, 1.5));
-	cam.lookAt(Vector(0.75, -0.2, -0.75));
+	cam.moveTo(Vector(-10, 1, 1.5));
+	cam.lookAt(Vector(0.75, -0.2, 0));
 
 	Render render(raytrace, &room, cam);
 	render.numThreads = 4;
-	render.subPixelsX = 1;
-	render.subPixelsY = 1;
+	render.subPixelsX = 4;
+	render.subPixelsY = 4;
 	render.brightness = 0;
-	render.contrast = 15;
+	render.contrast = 1;
 
 	for (unsigned int i = 0; i < 1000; i++) {
 		Image canvas(render());
