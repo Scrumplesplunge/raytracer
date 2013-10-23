@@ -32,6 +32,7 @@ class Render {
 			chunkWidth,
 			chunkHeight,
 			baseMask;
+		real brightness, contrast;
 	public:
 		Render(Vector (*)(Shape*, Ray), Shape*, Camera);
 		~Render();

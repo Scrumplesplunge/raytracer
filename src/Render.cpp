@@ -15,7 +15,9 @@ Render::Render(Vector (*renderPixelFunc)(Shape*, Ray), Shape *s, Camera c) :
 	numThreads(1),
 	chunkWidth(32),
 	chunkHeight(32),
-	baseMask(TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL)
+	baseMask(TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL | TraceRes::POSITION),
+	brightness(0),
+	contrast(1)
 {}
 
 Render::~Render() {
@@ -67,7 +69,7 @@ void Render::RenderChunk(Render* parent) {
 				color = color / (parent->subPixelsX * parent->subPixelsY);
 				Vector *ptr = parent->buffer + parent->cam.getWidth() * yi + xi;
 				ptr[0] = ptr[0] + color;
-				color = 256 * ptr[0] / parent->numPasses;
+				color = 256 * (parent->contrast * (ptr[0] / parent->numPasses) + parent->brightness);
 				unsigned char *pix = output(xi - x, yi - y);
 				pix[2] = (unsigned char)(color.x >= 256 ? 255 : (color.x < 0 ? 0 : color.x));
 				pix[1] = (unsigned char)(color.y >= 256 ? 255 : (color.y < 0 ? 0 : color.y));

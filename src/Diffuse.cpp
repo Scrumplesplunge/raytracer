@@ -13,12 +13,10 @@ Vector Diffuse::outgoingLight(Shape *scene, const TraceRes& hit, const Vector& d
 	if (significance < SIGNIFICANCE) return Vector();
 	
 	// Generate a random ray.
-	Vector vec;
-	if (random_real_diffuse(random_generator) > diffuse) {
-		vec = reflect(-direction, hit.normal);
-	} else {
-		vec = Vector::random();
-	}
+	Vector norm = hit.entering ? hit.normal : -hit.normal;
+	Vector ref = reflect(-direction, norm);
+	Vector rnd = Vector::random().normalized();
+	Vector vec = (rnd + (1 - EPSILON - diffuse) * ref).normalized();
 
 	real mul = dot(vec, hit.normal);
 	if (mul < 0) {
@@ -26,7 +24,7 @@ Vector Diffuse::outgoingLight(Shape *scene, const TraceRes& hit, const Vector& d
 		mul = -mul;
 	}
 	
-	Ray randomRay(hit.position + hit.normal * EPSILON, vec, TraceRes::ALL);
+	Ray randomRay(hit.position + norm * EPSILON, vec, TraceRes::ALL);
 	Array<TraceRes> res(scene->trace(randomRay));
 	Vector temp;
 	if (res.length() > 0) temp = mul * res[0].primitive->material->outgoingLight(scene, res[0], -vec, significance * mul);

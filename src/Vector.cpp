@@ -33,7 +33,7 @@ real Vector::length() const {
 }
 
 Vector Vector::random() {
-	return Vector(vector_rand(random_generator), vector_rand(random_generator), vector_rand(random_generator)).normalized();
+	return Vector(vector_rand(random_generator), vector_rand(random_generator), vector_rand(random_generator));
 }
 
 Vector operator+(const Vector& a, const Vector& b) {

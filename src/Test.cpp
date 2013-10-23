@@ -18,17 +18,20 @@
 #include <iostream>
 
 Glass glass(Vector(0.8, 0.9, 0.9));
-Diffuse white(0.5, Vector(1, 1, 1)), red(0.5, Vector(1, 0, 0)), green(0.5, Vector(0, 1, 0)), black(1, Vector(0, 0, 0));
-Light light(Vector(100, 100, 100));
+Diffuse white(1, Vector(1, 1, 1)), red(1, Vector(1, 0.1, 0)), green(1, Vector(0.1, 1, 0));
+Light light(Vector(1, 1, 1));
 
-Die die(Matrix(Vector(1, 0, 0), Vector(0, 1, 0), Vector(0, 0, 1), Vector(0, 0, 0)), &white);
-Sphere lightSource(Vector(1, 1, 3.5), 0.5);
-Plane box_floor(Vector(0, 0, -0.5 - EPSILON), Vector(0, 0, 1));
+Die die(Matrix(Vector(0.9511, 0.3090, 0), Vector(-0.3090, 0.9511, 0), Vector(0, 0, 1), Vector(-1, -0.6, 0)), &glass);
+Die die2(Matrix(Vector(0.9511, -0.3090, 0), Vector(0.3090, 0.9511, 0), Vector(0, 0, 1), Vector(-0.5, 0.6, 0)), &white);
+
+Sphere source(Vector(1, 0, 2), 0.5);
+
+Plane box_floor(Vector(0, 0, -0.501), Vector(0, 0, 1));
 Plane box_ceil(Vector(0, 0, 3.5), Vector(0, 0, -1));
 Plane box_wall_left(Vector(0, 2, 0), Vector(0, -1, 0));
 Plane box_wall_right(Vector(0, -2, 0), Vector(0, 1, 0));
 Plane box_wall_far(Vector(2, 0, 0), Vector(-1, 0, 0));
-Plane box_wall_behind(Vector(-20, 0, 0), Vector(1, 0, 0));
+Plane box_wall_behind(Vector(-10.1, 0, 0), Vector(1, 0, 0));
 CSGUnion room;
 
 Image sky("assets/sky.bmp");
@@ -36,7 +39,7 @@ Image sky("assets/sky.bmp");
 Vector raytrace(Shape *scene, Ray ray) {
 	Array<TraceRes> res(scene->trace(ray));
 	if (res.length() == 0) {
-		return Vector();
+		return Vector(1, 0, 1);
 	} else {
 		return res[0].primitive->material->outgoingLight(scene, res[0], -ray.direction, 1);
 	}
@@ -49,15 +52,14 @@ int main(int argc, char *args[]) {
 		return 1;
 	}
 
-	lightSource.material = &light;
-
-	box_ceil.material = box_floor.material = box_wall_far.material = &white;
-	box_wall_behind.material = &white;
+	source.material = &light;
+	box_ceil.material = box_wall_far.material = box_floor.material = box_wall_behind.material = &white;
 	box_wall_left.material = &red;
 	box_wall_right.material = &green;
 
-	room.add(&lightSource);
+	room.add(&source);
 	room.add(&die);
+	room.add(&die2);
 	room.add(&box_floor);
 	room.add(&box_ceil);
 	room.add(&box_wall_left);
@@ -65,13 +67,16 @@ int main(int argc, char *args[]) {
 	room.add(&box_wall_far);
 	room.add(&box_wall_behind);
 
-	Camera cam(512, 512, 1.7);
-	cam.moveTo(Vector(-3, 0, 0.2));
+	Camera cam(1920, 1080, 0.8);
+	cam.moveTo(Vector(-7, 1, 1.5));
+	cam.lookAt(Vector(0.75, -0.2, -0.75));
 
 	Render render(raytrace, &room, cam);
 	render.numThreads = 4;
 	render.subPixelsX = 1;
 	render.subPixelsY = 1;
+	render.brightness = 0;
+	render.contrast = 15;
 
 	for (unsigned int i = 0; i < 1000; i++) {
 		Image canvas(render());

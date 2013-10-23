@@ -12,9 +12,9 @@ Die::Die(const Matrix& orientation, Material *material) :
 	six0_(orientation * Vector(0.225, 0.225, 0.675), 0.2), six1_(orientation * Vector(0.225, 0, 0.675), 0.2),
 	six2_(orientation * Vector(0.225, -0.225, 0.675), 0.2), six3_(orientation * Vector(-0.225, 0.225, 0.675), 0.2),
 	six4_(orientation * Vector(-0.225, 0, 0.675), 0.2), six5_(orientation * Vector(-0.225, -0.225, 0.675), 0.2),
-	plane0(orientation * Vector(0, 0, 0.5), orientation * Vector(0, 0, 1)), plane1(orientation * Vector(0, 0, -0.5), orientation * Vector(0, 0, -1)),
-	plane2(orientation * Vector(0, 0.5, 0), orientation * Vector(0, 1, 0)), plane3(orientation * Vector(0, -0.5, 0), orientation * Vector(0, -1, 0)),
-	plane4(orientation * Vector(0.5, 0, 0), orientation * Vector(1, 0, 0)), plane5(orientation * Vector(-0.5, 0, 0), orientation * Vector(-1, 0, 0)),
+	plane0(orientation * Vector(0, 0, 0.5), orientation(Vector(0, 0, 1))), plane1(orientation * Vector(0, 0, -0.5), orientation(Vector(0, 0, -1))),
+	plane2(orientation * Vector(0, 0.5, 0), orientation(Vector(0, 1, 0))), plane3(orientation * Vector(0, -0.5, 0), orientation(Vector(0, -1, 0))),
+	plane4(orientation * Vector(0.5, 0, 0), orientation(Vector(1, 0, 0))), plane5(orientation * Vector(-0.5, 0, 0), orientation(Vector(-1, 0, 0))),
 	one0(&one0_), two0(&two0_), two1(&two1_), three0(&three0_), three1(&three1_), three2(&three2_), four0(&four0_), four1(&four1_),
 	four2(&four2_), four3(&four3_), five0(&five0_), five1(&five1_), five2(&five2_), five3(&five3_), five4(&five4_), six0(&six0_),
 	six1(&six1_), six2(&six2_), six3(&six3_), six4(&six4_), six5(&six5_)

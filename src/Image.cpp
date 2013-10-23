@@ -289,7 +289,7 @@ void Image::clone(const Image& prototype) {
 
 	// This is slightly more complex.
 	if (prototype.data != NULL) {
-		unsigned int bufferSize = 4 * ((3 * width + 3) / 4) * height;
+		unsigned int bufferSize = 3 * width * height;
 		data = new unsigned char[bufferSize];
 		memcpy(data, prototype.data, bufferSize);
 	}
