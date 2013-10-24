@@ -68,18 +68,18 @@ int main(int argc, char *args[]) {
 	room.add(&box_wall_far);
 	room.add(&box_wall_behind);
 
-	Camera cam(1920, 1080, 0.8);
+	Camera cam(256, 144, 0.8);
 	cam.moveTo(Vector(-10, 1, 1.5));
 	cam.lookAt(Vector(0.75, -0.2, 0));
 
 	Render render(raytrace, &room, cam);
 	render.numThreads = 4;
-	render.subPixelsX = 4;
-	render.subPixelsY = 4;
+	render.subPixelsX = 1;
+	render.subPixelsY = 1;
 	render.brightness = 0;
 	render.contrast = 1;
 
-	for (unsigned int i = 0; i < 1000; i++) {
+	for (unsigned int i = 0; i < 10; i++) {
 		Image canvas(render());
 		
 		// Save the image.
