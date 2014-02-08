@@ -68,7 +68,7 @@ int main(int argc, char *args[]) {
 	room.add(&box_wall_far);
 	room.add(&box_wall_behind);
 
-	Camera cam(256, 144, 0.8);
+	Camera cam(1024, 768, 0.8);
 	cam.moveTo(Vector(-10, 1, 1.5));
 	cam.lookAt(Vector(0.75, -0.2, 0));
 

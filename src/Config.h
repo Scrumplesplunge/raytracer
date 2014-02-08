@@ -1,7 +1,16 @@
 #pragma once
 
+#define USE_SIMD
+//#define USE_DOUBLE
+
+#ifdef USE_DOUBLE
 typedef double real;
 const real EPSILON = 0.00001;
+#else
+typedef float real;
+const real EPSILON = 0.001;
+#endif
+
 const real SIGNIFICANCE = 1e-3;
 const real HALFPI = 1.5707963267948966;
 const real PI = 3.141592653589793238463;
