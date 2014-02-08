@@ -1,5 +1,0 @@
-Double/NonVec 44.206 total at 382% cpu
-Float/NonVec  44.300 total at 384% cpu
-
-Double/Vec    N/A
-Float/Vec     45.769 total at 384% cpu
