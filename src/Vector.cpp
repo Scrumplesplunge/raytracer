@@ -11,8 +11,15 @@ Vector::Vector() : v1(), v2() {}
 Vector::Vector(real a, real b, real c) : v1(_mm_setr_pd(a, b)), v2(_mm_setr_pd(c, 0)) {}
 Vector::Vector(__m128 a, __m128 b) : v1(a), v2(b) {}
 #else
+// Bit mask for float magic.
+int hi = 0xffffffff, lo = 0x00000000;
+__m128 mask = _mm_setr_ps(*(float*)&hi, *(float*)&hi, *(float*)&hi, *(float*)&lo);
+__m128 half = _mm_setr_ps(0.5, 0.5, 0.5, 0);
+__m128 threehalfs = _mm_setr_ps(1.5, 1.5, 1.5, 0);
+#define shuf _MM_SHUFFLE(3, 0, 2, 1)
+
 // Single precision vector operations.
-Vector::Vector() : v() {}
+Vector::Vector() : v(_mm_setzero_ps()) {}
 Vector::Vector(real a, real b, real c) : v(_mm_setr_ps(a, b, c, 0)) {}
 Vector::Vector(__m128 a) : v(a) {}
 #endif
@@ -68,11 +75,62 @@ Vector Vector::setZ(real c) const {
 }
 
 Vector Vector::normalized() const {
+	#ifdef USE_SIMD
+	#ifdef USE_DOUBLE
+	// DPVO
+	#warning "I haven't implemented this yet :("
+	#else
+	// SPVO
+
+	// Take the pairwise products.
+	__m128 temp = _mm_mul_ps(v, v);
+
+	// Take horizontal sums.
+	temp = _mm_hadd_ps(temp, temp);
+	temp = _mm_hadd_ps(temp, temp);
+
+	// Half this value.
+	__m128 x2 = _mm_mul_ps(temp, half);
+	
+	// Calculate inverse square.
+	temp = _mm_rsqrt_ps(temp);
+
+	// Improve this approximation.
+	temp = _mm_mul_ps(temp, _mm_sub_ps(threehalfs, _mm_mul_ps(x2, _mm_mul_ps(temp, temp))));
+
+	// Return new vector multiplied by this.
+	return Vector(_mm_mul_ps(v, temp));
+	#endif
+	#else
+	// SO
 	return *this / length();
+	#endif
 }
 
 real Vector::squareLength() const {
+	#ifdef USE_SIMD
+	#ifdef USE_DOUBLE
+	// DPVO
+	#warning "I haven't implemented this yet :("
+	#else
+	// SPVO
+
+	// Take pairwise products.
+	__m128 temp = _mm_mul_ps(v, v);
+
+	// Sum horizontally.
+	temp = _mm_hadd_ps(temp, temp);
+	temp = _mm_hadd_ps(temp, temp);
+
+	// Output.
+	real out;
+	_mm_store_ss(&out, temp);
+	return out;
+	#endif
+	#else
+	// SO
 	return x * x + y * y + z * z;
+	#endif
 }
 
 real Vector::length() const {
@@ -126,7 +184,7 @@ Vector operator+(const Vector& a, real k) {
 	return Vector(_mm_add_pd(a.v1, temp), _mm_add_pd(a.v2, temp));
 	#else
 	// SPVO
-	return Vector(_mm_add_ps(a.v, _mm_load1_ps(&k)));
+	return Vector(_mm_and_ps(_mm_add_ps(a.v, _mm_load1_ps(&k)), mask));
 	#endif
 	#else
 	// SO
@@ -142,7 +200,7 @@ Vector operator+(real k, const Vector& a) {
 	return Vector(_mm_add_pd(temp, a.v1), _mm_add_pd(temp, a.v2));
 	#else
 	// SPVO
-	return Vector(_mm_add_ps(_mm_load1_ps(&k), a.v));
+	return Vector(_mm_and_ps(_mm_add_ps(_mm_load1_ps(&k), a.v), mask));
 	#endif
 	#else
 	// SO
@@ -173,7 +231,7 @@ Vector operator-(const Vector& a, real k) {
 	return Vector(_mm_sub_pd(a.v1, temp), _mm_sub_pd(a.v2, temp));
 	#else
 	// SPVO
-	return Vector(_mm_sub_ps(a.v, _mm_load1_ps(&k)));
+	return Vector(_mm_and_ps(_mm_sub_ps(a.v, _mm_load1_ps(&k)), mask));
 	#endif
 	#else
 	// SO
@@ -189,7 +247,7 @@ Vector operator-(real k, const Vector& a) {
 	return Vector(_mm_sub_pd(temp, a.v1), _mm_sub_pd(temp, a.v2));
 	#else
 	// SPVO
-	return Vector(_mm_sub_ps(_mm_load1_ps(&k), a.v));
+	return Vector(_mm_and_ps(_mm_sub_ps(_mm_load1_ps(&k), a.v), mask));
 	#endif
 	#else
 	// SO
@@ -270,17 +328,18 @@ Vector cross(const Vector& a, const Vector& b) {
 	#warning "I haven't implemented this yet :("
 	#else
 	// SPVO
+	__m128 A = a.v, B = b.v;
 	__m128 temp = _mm_sub_ps(
 		_mm_mul_ps(
-			a.v,
-			_mm_shuffle_ps(b.v, b.v, _MM_SHUFFLE(0, 0, 2, 1))
+			A,
+			_mm_shuffle_ps(B, B, shuf)
 		),
 		_mm_mul_ps(
-			_mm_shuffle_ps(a.v, a.v, _MM_SHUFFLE(0, 0, 2, 1)),
-			b.v
+			_mm_shuffle_ps(A, A, shuf),
+			B
 		)
 	);
-	return Vector(_mm_shuffle_ps(temp, temp, _MM_SHUFFLE(3, 0, 2, 1)));
+	return Vector(_mm_shuffle_ps(temp, temp, shuf));
 	#endif
 	#else
 	// SO
@@ -298,9 +357,6 @@ real dot(const Vector& a, const Vector& b) {
 
 	// Take the pairwise products.
 	__m128 temp = _mm_mul_ps(a.v, b.v);
-
-	// Normalize to only (x, y, z, 0)
-	temp = _mm_shuffle_ps(temp, _mm_shuffle_ps(temp, _mm_setzero_ps(), _MM_SHUFFLE(0, 0, 0, 2)), _MM_SHUFFLE(3, 0, 1, 0));
 
 	// Take horizontal sums.
 	temp = _mm_hadd_ps(temp, temp);

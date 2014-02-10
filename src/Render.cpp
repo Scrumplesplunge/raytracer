@@ -13,8 +13,8 @@ Render::Render(Vector (*renderPixelFunc)(Shape*, Ray), Shape *s, Camera c) :
 	subPixelsX(1),
 	subPixelsY(1),
 	numThreads(1),
-	chunkWidth(32),
-	chunkHeight(32),
+	chunkWidth(64),
+	chunkHeight(64),
 	baseMask(TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL | TraceRes::POSITION),
 	brightness(0),
 	contrast(1)
@@ -60,15 +60,24 @@ void Render::RenderChunk(Render* parent) {
 		for (unsigned int yi = y; yi < y2; yi++) {
 			for (unsigned int xi = x; xi < x2; xi++) {
 				Vector color;
+
+				// Supersampling.
 				for (unsigned int aay = 0, aaymax = parent->subPixelsY; aay < aaymax; aay++) {
 					for (unsigned int aax = 0, aaxmax = parent->subPixelsX; aax < aaxmax; aax++) {
+						// Create a ray and trace it.
 						Ray ray(parent->cam.getRay(xi + (real(aax) + 0.5) / aaxmax, yi + (real(aay) + 0.5) / aaymax, parent->baseMask));
 						color = color + parent->renderPixel(parent->shape, ray);
 					}
 				}
+
+				// Take the average of all samples.
 				color = color / (parent->subPixelsX * parent->subPixelsY);
 				Vector *ptr = parent->buffer + parent->cam.getWidth() * yi + xi;
+
+				// Store the sum of all colours; used for calculating fine average over time.
 				ptr[0] = ptr[0] + color;
+
+				// Output the current average to the pixel.
 				color = 256 * (parent->contrast * (ptr[0] / parent->numPasses) + parent->brightness);
 				unsigned char *pix = output(xi - x, yi - y);
 				pix[2] = (unsigned char)(color.x >= 256 ? 255 : (color.x < 0 ? 0 : color.x));

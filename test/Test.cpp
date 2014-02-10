@@ -34,3 +34,16 @@ bool Test::equal(float a, float b) {
 	return a - 1e-5 < b && b < a + 1e-5;
 }
 
+void Test::test(std::string name) {
+	std::cout << "Testing " << note << name << norm << " : " << std::flush;
+}
+
+void Test::perf(float time, unsigned int reps) {
+	std::cout << "Completed in " << note << time << " seconds" << norm << " (" << note;
+	if (time > reps) {
+		std::cout << (time / reps) << " secs/rep";
+	} else {
+		std::cout << (reps / time) << " reps/sec";
+	}
+	std::cout << norm << ")" << std::endl;
+}

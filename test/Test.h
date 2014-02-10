@@ -14,5 +14,7 @@ class Test {
 
 		static float getTime();
 		static bool equal(float a, float b);
+		static void test(std::string name);
+		static void perf(float time, unsigned int reps);
 };
 
