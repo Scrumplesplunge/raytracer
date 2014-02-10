@@ -11,10 +11,10 @@ BINARY=bin
 ASSEMBLER=asm
 
 # Source path
-TESTSRC=$(wildcard $(TESTPATH)/*.cpp)
 SOURCES=$(wildcard $(SOURCE)/*.cpp)
-TESTOBJ=$(addprefix $(OBJECT)/$(TESTPATH)/,$(notdir $(TESTSRC:.cpp=.o)))
 OBJECTS=$(addprefix $(OBJECT)/$(SOURCE)/,$(notdir $(SOURCES:.cpp=.o)))
+TESTSRC=$(wildcard $(TESTPATH)/*.cpp)
+TESTOBJ=$(addprefix $(OBJECT)/$(TESTPATH)/,$(notdir $(TESTSRC:.cpp=.o)))
 ASSEMBLERS=$(addprefix $(ASSEMBLER)/$(SOURCE)/,$(notdir $(SOURCES:.cpp=.s)))
 
 # Compiler flags
@@ -31,22 +31,22 @@ TEST=test
 # Put everything together.
 all: $(EXECUTABLE) $(TEST)
 
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LFLAGS) -o $(BINARY)/$@ $^
+
+$(OBJECT)/$(SOURCE)/%.o: $(SOURCE)/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
 $(TEST): $(TESTOBJ) $(filter-out $(OBJECT)/$(SOURCE)/Main.o,$(OBJECTS))
-	$(CC) $(TLFLAGS) $^ -o $(BINARY)/$@
+	$(CC) $(TLFLAGS) -o $(BINARY)/$@ $^
 
 $(OBJECT)/$(TESTPATH)/%.o: $(TESTPATH)/%.cpp
 	$(CC) $(TCFLAGS) -c $< -o $@
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LFLAGS) -o $(BINARY)/$@ $^
+# assembler: $(ASSEMBLERS)
 
-assembler: $(ASSEMBLERS)
-
-$(ASSEMBLER)/%.s: $(SOURCE)/%.cpp
-	$(CC) $(CFLAGS) -c $< -fverbose-asm -S -o $@
-
-$(OBJECT)/$(SOURCE)/%.o: $(SOURCE)/%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+# $(ASSEMBLER)/%.s: $(SOURCE)/%.cpp
+# 	$(CC) $(CFLAGS) -c $< -fverbose-asm -S -o $@
 
 # Clean build.
 clean:
@@ -58,3 +58,4 @@ clean:
 
 # Include the generated dependency graphs from the compilation process.
 -include $(OBJECTS:.o=.d)
+-include $(TESTOBJ:.o=.d)

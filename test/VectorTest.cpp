@@ -28,6 +28,14 @@ class VectorTest : public Test {
 		int eq(std::string name, const Vector& a, const Vector& b) {
 			return eq(name, a, b.x, b.y, b.z);
 		}
+
+		void perf(std::string name) {
+			std::cout << "Testing " << note << name << norm << " : ";
+		}
+
+		void result(float t) {
+			std::cout << "Completed in " << note << t << " seconds" << norm << "." << std::endl;
+		}
 	public:
 		int perform() {
 			std::cout << "Performing " << note << "Correctness Tests" << norm << ":" << std::endl;
@@ -55,28 +63,37 @@ class VectorTest : public Test {
 			const Vector vh = vb - 1;
 			errors += eq("H = B - 1", vh, 2, 1, 0);
 			const Vector vi = -va;
-			errors += eq("I = -A", vg, -1, -2, -3);
+			errors += eq("I = -A", vi, -1, -2, -3);
 
 			// Multiplication tests.
 			const Vector vj = va * 2;
-			errors += eq("J = A * 2", vh, 2, 4, 6);
+			errors += eq("J = A * 2", vj, 2, 4, 6);
 			const Vector vk = 2 * vb;
-			errors += eq("K = 2 * B", vi, 6, 4, 2);
+			errors += eq("K = 2 * B", vk, 6, 4, 2);
 
 			// Division test.
 			const Vector vl = va / 2;
-			errors += eq("L = A / 2", vj, 0.5, 1, 1.5);
+			errors += eq("L = A / 2", vl, 0.5, 1, 1.5);
+
+			// SquareLength.
+			errors += eq("A.squareLength()", va.squareLength(), 14);
+
+			// Length.
+			errors += eq("A.squareLength()", va.length(), 3.7416573867739413);
+
+			// Normalized version.
+			errors += eq("A.normalized()", va.normalized(), 0.2672612419124244, 0.5345224838248488, 0.8017837257372732);
 			
 			// Dot product.
-			eq("dot(A, B)", dot(va, vb), 10);
+			errors += eq("dot(A, B)", dot(va, vb), 10);
 
 			// Cross product.
 			const Vector vm = cross(va, vb);
-			eq("M = cross(A, B)", vm, -4, 8, -4);
+			errors += eq("M = cross(A, B)", vm, -4, 8, -4);
 
 			// Value of A and B at the end.
-			eq("A == A0", va, 1, 2, 3);
-			eq("B == B0", vb, 3, 2, 1);
+			errors += eq("A == A0", va, 1, 2, 3);
+			errors += eq("B == B0", vb, 3, 2, 1);
 
 			// End of correctness tests.
 			std::cout << note << "Correctness Tests" << norm << " complete: " << (errors == 0 ? good : bad) << errors << " errors" << norm << ".\n" << std::endl;
@@ -85,20 +102,41 @@ class VectorTest : public Test {
 			std::cout << "Performing " << note << "Performance Tests" << norm << ":" << std::endl;
 			float start, end;
 
-			std::cout << "Testing " << note << "dot product" << norm << " : ";
+			perf("dot product");
 			real k;
 			start = getTime();
-			for (unsigned int i = 0; i < 1000000000; i++) {
+			for (unsigned int i = 0; i < 1e9; i++) {
 				k += dot(va, vb);
 			}
 			end = getTime();
-			std::cout << "Completed in " << note << (end - start) << " seconds" << norm << "." << std::endl;
+			result(end - start);
+
+			perf("cross product");
+			Vector vn = va;
+			start = getTime();
+			for (unsigned int i = 0; i < 1e9; i++) {
+				vn = cross(vn, vb);
+			}
+			end = getTime();
+			result(end - start);
+
+			perf("normalization");
+			Vector vo;
+			start = getTime();
+			for (unsigned int i = 0; i < 1e9; i++) {
+				vo = va.normalized();
+			}
+			end = getTime();
+			result(end - start);
+
+			// End of performance tests.
+			std::cout << note << "Performance Tests" << norm << " complete." << std::endl;
 
 			return errors;
 		}
 
 		std::string name() {
-			return "Vector Correctness and Performance";
+			return Vector::type() + std::string(" Correctness and Performance Tests");
 		}
 };
 

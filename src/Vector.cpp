@@ -83,6 +83,26 @@ Vector Vector::random() {
 	return Vector(vector_rand(random_generator), vector_rand(random_generator), vector_rand(random_generator));
 }
 
+const char *Vector::type() {
+	#ifdef USE_SIMD
+	#ifdef USE_DOUBLE
+	// DPVO
+	return "Double-Precision SSE Vector";
+	#else
+	// SPVO
+	return "Single-Precision SSE Vector";
+	#endif
+	#else
+	#ifdef USE_DOUBLE
+	// DPSO
+	return "Double-Precision Serial Vector";
+	#else
+	// SPSO
+	return "Single-Precision Serial Vector";
+	#endif
+	#endif
+}
+
 Vector operator+(const Vector& a, const Vector& b) {
 	#ifdef USE_SIMD
 	#ifdef USE_DOUBLE

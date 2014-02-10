@@ -8,9 +8,9 @@ const std::string Test::good = Test::color(2);
 const std::string Test::note = Test::color(3);
 
 int Test::operator()() {
-	std::cout << "Performing " << note << this->name() << norm << "..\n" << std::endl;
+	std::cout << norm << "Performing " << note << this->name() << norm << "..\n" << std::endl;
 	int out = this->perform();
-	std::cout << "\n" << note << this->name() << norm << " test complete: ";
+	std::cout << "\n" << note << this->name() << norm << " complete: ";
 	std::cout << (out == 0 ? good : bad) << out << " errors" << norm << ".\n" << std::endl;
 }
 

@@ -64,6 +64,7 @@ class Vector {
 		real length() const;
 
 		static Vector random();
+		static const char *type();
 };
 
 Vector operator+(const Vector&, const Vector&);
