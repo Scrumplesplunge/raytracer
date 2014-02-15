@@ -52,13 +52,12 @@ int main(int argc, char *args[]) {
 		return 1;
 	}
 
-	//source.material = &light;
-	box_wall_far.material = &sky;
-	box_ceil.material = box_floor.material = box_wall_behind.material = &white;
+	source.material = &light;
+	box_wall_far.material = box_ceil.material = box_floor.material = box_wall_behind.material = &white;
 	box_wall_left.material = &red;
 	box_wall_right.material = &green;
 
-	//room.add(&source);
+	room.add(&source);
 	room.add(&die);
 	room.add(&die2);
 	room.add(&box_floor);
@@ -68,18 +67,17 @@ int main(int argc, char *args[]) {
 	room.add(&box_wall_far);
 	room.add(&box_wall_behind);
 
-	Camera cam(1024, 768, 0.8);
+	Camera cam(1920, 1080, 0.8);
 	cam.moveTo(Vector(-10, 1, 1.5));
 	cam.lookAt(Vector(0.75, -0.2, 0));
 
 	Render render(raytrace, &room, cam);
 	render.numThreads = 4;
-	render.subPixelsX = 1;
-	render.subPixelsY = 1;
+	render.subPixels = 4;
 	render.brightness = 0;
-	render.contrast = 1;
+	render.contrast = 5;
 
-	for (unsigned int i = 0; i < 10; i++) {
+	for (unsigned int i = 0; i < 100; i++) {
 		Image canvas(render());
 		
 		// Save the image.

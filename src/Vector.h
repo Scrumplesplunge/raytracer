@@ -2,7 +2,7 @@
 #include "Config.h"
 
 #ifdef USE_SIMD
-#include <xmmintrin.h>
+#include <x86intrin.h>
 #endif
 
 #define align16 __attribute__((aligned (16)))

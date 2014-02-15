@@ -1,5 +1,8 @@
 #include "Render.h"
 #include "Ray.h"
+#include "Random.h"
+
+std::uniform_real_distribution<real> real_rand(0, 1);
 
 Render::Render(Vector (*renderPixelFunc)(Shape*, Ray), Shape *s, Camera c) :
 	renderPixel(renderPixelFunc),
@@ -10,8 +13,7 @@ Render::Render(Vector (*renderPixelFunc)(Shape*, Ray), Shape *s, Camera c) :
 	output(c.getWidth(), c.getHeight()),
 	cam(c),
 	shape(s),
-	subPixelsX(1),
-	subPixelsY(1),
+	subPixels(1),
 	numThreads(1),
 	chunkWidth(64),
 	chunkHeight(64),
@@ -62,16 +64,19 @@ void Render::RenderChunk(Render* parent) {
 				Vector color;
 
 				// Supersampling.
-				for (unsigned int aay = 0, aaymax = parent->subPixelsY; aay < aaymax; aay++) {
-					for (unsigned int aax = 0, aaxmax = parent->subPixelsX; aax < aaxmax; aax++) {
-						// Create a ray and trace it.
-						Ray ray(parent->cam.getRay(xi + (real(aax) + 0.5) / aaxmax, yi + (real(aay) + 0.5) / aaymax, parent->baseMask));
-						color = color + parent->renderPixel(parent->shape, ray);
-					}
-				}
+                if (parent->subPixels == 0) {
+                    color = parent->renderPixel(parent->shape, parent->cam.getRay(xi + 0.5, yi + 0.5, parent->baseMask));
+                } else {
+			        for (unsigned int i = 0, im = parent->subPixels; i < im; i++) {
+				    	// Create a ray and trace it.
+				    	Ray ray(parent->cam.getRay(xi + real_rand(random_generator), yi + real_rand(random_generator), parent->baseMask));
+				        color = color + parent->renderPixel(parent->shape, ray);
+				    }
 
-				// Take the average of all samples.
-				color = color / (parent->subPixelsX * parent->subPixelsY);
+				    // Take the average of all samples.
+				    color = color / parent->subPixels;
+                }
+
 				Vector *ptr = parent->buffer + parent->cam.getWidth() * yi + xi;
 
 				// Store the sum of all colours; used for calculating fine average over time.

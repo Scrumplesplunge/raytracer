@@ -129,7 +129,7 @@ class VectorTest : public Test {
 			return errors;
 		}
 
-		std::string name() {
+		std::string name() const {
 			return Vector::type() + std::string(" Correctness and Performance Tests");
 		}
 };

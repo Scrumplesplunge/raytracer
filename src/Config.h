@@ -1,7 +1,7 @@
 #pragma once
 
-#define USE_SIMD
-//#define USE_DOUBLE
+//#define USE_SIMD
+#define USE_DOUBLE
 
 #ifdef USE_DOUBLE
 typedef double real;
