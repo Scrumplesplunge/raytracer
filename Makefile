@@ -18,10 +18,10 @@ TESTOBJ=$(addprefix $(OBJECT)/$(TESTPATH)/,$(notdir $(TESTSRC:.cpp=.o)))
 ASSEMBLERS=$(addprefix $(ASSEMBLER)/$(SOURCE)/,$(notdir $(SOURCES:.cpp=.s)))
 
 # Compiler flags
-FLAGS=-pthread -msse3 -mmmx -std=c++11
-TLFLAGS=-pg -O3 $(FLAGS)
+FLAGS=-pthread -msse3 -mmmx -std=c++11 
+TLFLAGS=-Og -pg $(FLAGS)
 TCFLAGS=$(TLFLAGS) -MMD
-LFLAGS=-O3 $(FLAGS)
+LFLAGS=-Ofast -march=native -flto -Wl,--gc-sections -s $(FLAGS)
 CFLAGS=$(LFLAGS) -MMD
 
 # Output binary name
@@ -50,11 +50,12 @@ $(OBJECT)/$(TESTPATH)/%.o: $(TESTPATH)/%.cpp
 
 # Clean build.
 clean:
+	rm -rf $(BINARY)/*
 	rm -rf $(OBJECT)/*
-	mkdir $(OBJECT)/$(SOURCE)
-	mkdir $(OBJECT)/$(TESTPATH)
+	mkdir -p $(OBJECT)/$(SOURCE)
+	mkdir -p $(OBJECT)/$(TESTPATH)
 	rm -rf $(ASSEMBLER)/*
-	mkdir $(ASSEMBLER)/$(SOURCE)
+	mkdir -p $(ASSEMBLER)/$(SOURCE)
 
 # Include the generated dependency graphs from the compilation process.
 -include $(OBJECTS:.o=.d)
