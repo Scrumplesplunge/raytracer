@@ -1,3 +1,6 @@
 .*
 !.gitignore
-obj/
+bin
+dep
+gen
+obj
