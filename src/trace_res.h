@@ -17,11 +17,11 @@ class TraceRes {
                    NORMAL = 0x00000004, DISTANCE = 0x00000008,
                    ENTERING = 0x00000010, ALL = 0xffffffff;
 
-  static int compare(TraceRes, TraceRes);
-
  public:
   TraceRes();
   TraceRes(const Primitive *);
 
   void print();
 };
+
+bool operator<(const TraceRes& left, const TraceRes& right);

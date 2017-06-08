@@ -3,26 +3,26 @@
 
 CSGComplement::CSGComplement(const Shape* shape) : contents(shape) {}
 
-Array<TraceRes> CSGComplement::trace(const Ray& ray) const {
+std::vector<TraceRes> CSGComplement::trace(const Ray& ray) const {
   Ray rayCopy(ray);
 
   // Required for CSG.
   rayCopy.mask |= TraceRes::ENTERING;
 
   // Perform the trace.
-  Array<TraceRes> out(contents->trace(ray));
+  std::vector<TraceRes> boundaries = contents->trace(ray);
 
   // Take its complement.
-  for (unsigned int i = 0; i < out.length(); i++) {
+  for (TraceRes& boundary : boundaries) {
     // Invert this.
-    out[i].entering = !out[i].entering;
+    boundary.entering = !boundary.entering;
 
     // If we have surface normals, invert these too.
-    if (rayCopy.mask & TraceRes::NORMAL) out[i].normal = -out[i].normal;
+    if (rayCopy.mask & TraceRes::NORMAL) boundary.normal = -boundary.normal;
   }
 
   // Return the result.
-  return out;
+  return boundaries;
 }
 
 bool CSGComplement::contains(const Vector& vec) const {

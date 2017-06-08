@@ -4,6 +4,8 @@
 #include "primitive.h"
 #include "vector.h"
 
+#include <vector>
+
 class Plane : public Primitive {
  private:
   Vector normal;
@@ -12,7 +14,7 @@ class Plane : public Primitive {
  public:
   Plane(const Vector &, const Vector &);
 
-  virtual Array<TraceRes> trace(const Ray &) const;
+  virtual std::vector<TraceRes> trace(const Ray &) const;
   virtual bool contains(const Vector &) const;
   virtual const char *name() const;
 

@@ -1,4 +1,3 @@
-#include "array.h"
 #include "camera.h"
 #include "config.h"
 #include "csg_union.h"
@@ -43,8 +42,8 @@ Plane box_wall_behind(Vector(-10.1, 0, 0), Vector(1, 0, 0));
 CSGUnion room;
 
 Vector raytrace(Shape *scene, Ray ray) {
-  Array<TraceRes> res(scene->trace(ray));
-  if (res.length() == 0) {
+  std::vector<TraceRes> res(scene->trace(ray));
+  if (res.size() == 0) {
     return Vector(1, 0, 1);
   } else {
     return res[0].primitive->material->outgoingLight(scene, res[0],
@@ -75,13 +74,13 @@ int main(int argc, char *args[]) {
   room.add(&box_wall_far);
   room.add(&box_wall_behind);
 
-  Camera cam(3840, 2160, 0.4);
+  Camera cam(384, 216, 0.4);
   cam.moveTo(Vector(-10, 1, 1.5));
   cam.lookAt(Vector(0.75, -0.2, 0));
 
   Render render(raytrace, &room, cam);
   render.numThreads = 16;
-  render.subPixels = 10;
+  render.subPixels = 1;
   render.brightness = 0;
   render.contrast = 5;
 

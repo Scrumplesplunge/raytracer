@@ -1,13 +1,14 @@
 #pragma once
 
-#include "array.h"
 #include "ray.h"
 #include "trace_res.h"
 #include "vector.h"
 
+#include <vector>
+
 class Shape {
  public:
-  virtual Array<TraceRes> trace(const Ray &) const = 0;
+  virtual std::vector<TraceRes> trace(const Ray &) const = 0;
   virtual bool contains(const Vector &) const = 0;
   virtual const char *name() const;
 

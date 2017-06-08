@@ -1,25 +1,31 @@
 #include "csg_union.h"
 #include "config.h"
 
+#include <algorithm>
+#include <iterator>
+
 CSGUnion::CSGUnion() {}
 
-void CSGUnion::add(const Shape* shape) { contents.push(shape); }
+void CSGUnion::add(const Shape* shape) { contents.push_back(shape); }
 
-Array<TraceRes> CSGUnion::trace(const Ray& ray) const {
+std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
   Ray rayCopy(ray);
 
   // These are required for CSG.
   rayCopy.mask |= TraceRes::DISTANCE | TraceRes::ENTERING;
 
   // Output array.
-  Array<TraceRes> out;
+  std::vector<TraceRes> boundaries;
 
   // Try each branch of the union.
   bool inside = false;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     // Results from one branch, merged in with existing output.
-    Array<TraceRes> branch(contents[i]->trace(rayCopy));
-    Array<TraceRes> temp(out.merge(branch, TraceRes::compare));
+    std::vector<TraceRes> branch_boundaries = contents[i]->trace(rayCopy);
+    std::vector<TraceRes> merged_boundaries;
+    std::merge(boundaries.begin(), boundaries.end(),
+               branch_boundaries.begin(), branch_boundaries.end(),
+               std::back_inserter(merged_boundaries));
 
     // Meh, this vaguely resembles a semaphore.
     unsigned int sem = 0;
@@ -31,26 +37,26 @@ Array<TraceRes> CSGUnion::trace(const Ray& ray) const {
     inside = inside || isContained;
 
     // Empty the output array, and generate the new one.
-    out = Array<TraceRes>();
-    for (unsigned int j = 0; j < temp.length(); j++) {
-      if (sem == 0) out.push(temp[j]);
-      if (temp[j].entering) {
+    boundaries.clear();
+    for (const TraceRes& entry : merged_boundaries) {
+      if (sem == 0) boundaries.push_back(entry);
+      if (entry.entering) {
         sem++;
       } else {
         sem--;
       }
-      if (sem == 0) out.push(temp[j]);
+      if (sem == 0) boundaries.push_back(entry);
     }
   }
 
   // Return the result.
-  return out;
+  return boundaries;
 }
 
 bool CSGUnion::contains(const Vector& vec) const {
   bool out = false;
 
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     out = out || contents[i]->contains(vec);
   }
 
@@ -61,7 +67,7 @@ const char* CSGUnion::name() const { return "CSG Union"; }
 
 real CSGUnion::minX() const {
   real out = INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->minX();
     out = temp < out ? temp : out;
   }
@@ -70,7 +76,7 @@ real CSGUnion::minX() const {
 
 real CSGUnion::minY() const {
   real out = INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->minY();
     out = temp < out ? temp : out;
   }
@@ -79,7 +85,7 @@ real CSGUnion::minY() const {
 
 real CSGUnion::minZ() const {
   real out = INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->minZ();
     out = temp < out ? temp : out;
   }
@@ -88,7 +94,7 @@ real CSGUnion::minZ() const {
 
 real CSGUnion::maxX() const {
   real out = -INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->maxX();
     out = out < temp ? temp : out;
   }
@@ -97,7 +103,7 @@ real CSGUnion::maxX() const {
 
 real CSGUnion::maxY() const {
   real out = -INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->maxY();
     out = out < temp ? temp : out;
   }
@@ -106,7 +112,7 @@ real CSGUnion::maxY() const {
 
 real CSGUnion::maxZ() const {
   real out = -INFINITY;
-  for (unsigned int i = 0; i < contents.length(); i++) {
+  for (unsigned int i = 0; i < contents.size(); i++) {
     real temp = contents[i]->maxZ();
     out = out < temp ? temp : out;
   }

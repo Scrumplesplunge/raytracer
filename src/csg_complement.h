@@ -5,6 +5,8 @@
 #include "trace_res.h"
 #include "vector.h"
 
+#include <vector>
+
 class CSGComplement : public CSG {
  private:
   const Shape* contents;
@@ -12,7 +14,7 @@ class CSGComplement : public CSG {
  public:
   CSGComplement(const Shape*);
 
-  virtual Array<TraceRes> trace(const Ray&) const;
+  virtual std::vector<TraceRes> trace(const Ray&) const;
   virtual bool contains(const Vector&) const;
   virtual const char* name() const;
 

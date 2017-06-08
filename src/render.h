@@ -1,6 +1,5 @@
 #pragma once
 
-#include "array.h"
 #include "camera.h"
 #include "image.h"
 #include "ray.h"

@@ -3,11 +3,13 @@
 #include "shape.h"
 #include "vector.h"
 
+#include <vector>
+
 class KDTree : public Shape {
  private:
   real split;
   char splitDirection;
-  Array<Shape*> a, b;
+  std::vector<Shape*> a, b;
 
  public:
 };

@@ -1,20 +1,21 @@
 #pragma once
 
-#include "array.h"
 #include "csg.h"
 #include "trace_res.h"
 #include "vector.h"
 
+#include <vector>
+
 class CSGIntersection : public CSG {
  private:
-  Array<const Shape *> contents;
+   std::vector<const Shape *> contents;
 
  public:
   CSGIntersection();
 
   void add(const Shape *);
 
-  virtual Array<TraceRes> trace(const Ray &) const;
+  virtual std::vector<TraceRes> trace(const Ray &) const;
   virtual bool contains(const Vector &) const;
   virtual const char *name() const;
 

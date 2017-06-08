@@ -4,6 +4,8 @@
 #include "primitive.h"
 #include "vector.h"
 
+#include <vector>
+
 class Sphere : public Primitive {
  private:
   Vector position;
@@ -12,7 +14,7 @@ class Sphere : public Primitive {
  public:
   Sphere(const Vector &, real);
 
-  virtual Array<TraceRes> trace(const Ray &) const;
+  virtual std::vector<TraceRes> trace(const Ray &) const;
   virtual bool contains(const Vector &) const;
   virtual const char *name() const;
 

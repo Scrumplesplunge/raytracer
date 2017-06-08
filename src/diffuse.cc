@@ -28,12 +28,14 @@ Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
   }
 
   Ray randomRay(hit.position + norm * EPSILON, vec, TraceRes::ALL);
-  Array<TraceRes> res(scene->trace(randomRay));
-  Vector temp;
-  if (res.length() > 0)
-    temp = mul *
-           res[0].primitive->material->outgoingLight(scene, res[0], -vec,
-                                                     significance * mul);
+  std::vector<TraceRes> boundaries = scene->trace(randomRay);
+
+  if (boundaries.size() == 0) return {};
+
+  const Material& material = *boundaries[0].primitive->material;
+  Vector light = material.outgoingLight(
+      scene, boundaries[0], -vec, significance * mul);
+  Vector temp = mul * light;
 
   return Vector(temp.x * color.x, temp.y * color.y, temp.z * color.z);
 }

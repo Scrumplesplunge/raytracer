@@ -3,14 +3,12 @@
 Plane::Plane(const Vector& pos, const Vector& norm)
     : normal(norm.normalized()), offset(dot(pos, normal)) {}
 
-Array<TraceRes> Plane::trace(const Ray& ray) const {
-  Array<TraceRes> out;
-
+std::vector<TraceRes> Plane::trace(const Ray& ray) const {
   // Component of ray direction in the direction of the surface normal.
   real a = dot(ray.direction, normal);
 
   // If this is 0, no intersection occurs.
-  if (-EPSILON <= a && a <= EPSILON) return out;
+  if (-EPSILON <= a && a <= EPSILON) return {};
 
   // Component of the ray position in the direction of the surface normal.
   real b = dot(ray.start, normal);
@@ -19,7 +17,7 @@ Array<TraceRes> Plane::trace(const Ray& ray) const {
   real t = (offset - b) / a;
 
   // Negative t is not k.
-  if (t < 0) return out;
+  if (t < 0) return {};
 
   // We have found the intersection! Hoorah!
   TraceRes hit(this);
@@ -44,8 +42,7 @@ Array<TraceRes> Plane::trace(const Ray& ray) const {
     hit.mask |= TraceRes::NORMAL;
   }
 
-  out.push(hit);
-  return out;
+  return {hit};
 }
 
 bool Plane::contains(const Vector& vec) const {

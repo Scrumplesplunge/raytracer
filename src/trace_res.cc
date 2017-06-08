@@ -8,9 +8,8 @@ TraceRes::TraceRes() : mask(0) {}
 TraceRes::TraceRes(const Primitive *prim)
     : mask(TraceRes::PRIMITIVE), primitive(prim) {}
 
-int TraceRes::compare(TraceRes a, TraceRes b) {
-  if (a.distance == b.distance) return 0;
-  return a.distance < b.distance ? -1 : 1;
+bool operator<(const TraceRes& left, const TraceRes& right) {
+  return left.distance < right.distance;
 }
 
 void TraceRes::print() {

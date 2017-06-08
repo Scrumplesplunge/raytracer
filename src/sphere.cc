@@ -5,37 +5,33 @@
 Sphere::Sphere(const Vector& p, real r)
     : position(p), radius(r), squareRadius(r * r) {}
 
-Array<TraceRes> Sphere::trace(const Ray& ray) const {
+std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
   /*
-          A = d . d := 1 because ray.direction is always unit.
+    A = d . d := 1 because ray.direction is always unit.
 
-          Given this, the quadratic formula simplifies:
-             (-2(o - c) . d +- sqrt(4((o - c) . d)^2 - 4((o - c) . (o - c) -
-     r^2))) / 2
-          -> -(o - c) . d +- sqrt(((o - c) . d)^2 + r^2 - (o - c) . (o - c))
+    Given this, the quadratic formula simplifies:
+    (-2(o - c) . d +- sqrt(4((o - c) . d)^2 - 4((o - c) . (o - c) - r^2))) / 2
+    -> -(o - c) . d +- sqrt(((o - c) . d)^2 + r^2 - (o - c) . (o - c))
 
-          By substituting in v1 = o - c:
-          -> -v1 . d +- sqrt((v1 . d)^2 + r^2 - v1 . v1)
+    By substituting in v1 = o - c:
+    -> -v1 . d +- sqrt((v1 . d)^2 + r^2 - v1 . v1)
 
-          By substituting in s1 = v1 . d:
-          -> -s1 +- sqrt(s1^2 + r^2 - v1 . v1);
+    By substituting in s1 = v1 . d:
+    -> -s1 +- sqrt(s1^2 + r^2 - v1 . v1);
   */
 
   Vector rel = ray.start - position;
   real b = dot(rel, ray.direction);
   real det = b * b + squareRadius - rel.squareLength();
 
-  // Output.
-  Array<TraceRes> out;
-
   // No intersection if the determinant is negative.
-  if (det < 0) return out;
+  if (det < 0) return {};
 
   real sqrtdet = sqrt(det);
   real t1 = -b + sqrtdet;
 
   // No intersection if the latest intersection is behind the ray origin.
-  if (t1 < 0) return out;
+  if (t1 < 0) return {};
 
   // Far intersection.
   TraceRes far(this);
@@ -60,11 +56,9 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
     far.mask |= TraceRes::NORMAL;
   }
 
-  out.push(far);
-
   // Near intersection.
   real t2 = -b - sqrtdet;
-  if (t2 < 0) return out;
+  if (t2 < 0) return {far};
 
   TraceRes near(this);
 
@@ -88,10 +82,8 @@ Array<TraceRes> Sphere::trace(const Ray& ray) const {
     near.mask |= TraceRes::NORMAL;
   }
 
-  out.unshift(near);
-
   // We're done here.
-  return out;
+  return {near, far};
 }
 
 bool Sphere::contains(const Vector& vec) const {
