@@ -18,11 +18,11 @@ TESTOBJ=$(addprefix $(OBJECT)/$(TESTPATH)/,$(notdir $(TESTSRC:.cpp=.o)))
 ASSEMBLERS=$(addprefix $(ASSEMBLER)/$(SOURCE)/,$(notdir $(SOURCES:.cpp=.s)))
 
 # Compiler flags
-FLAGS=-pthread -msse3 -mmmx -std=c++11 
-TLFLAGS=-Og -pg $(FLAGS)
-TCFLAGS=$(TLFLAGS) -MMD
-LFLAGS=-Ofast -march=native -flto -Wl,--gc-sections -s $(FLAGS)
-CFLAGS=$(LFLAGS) -MMD
+TLFLAGS=-Og -pg -lpthread
+TCFLAGS=-Og -MMD
+LFLAGS=-Wl,--gc-sections -flto -lpthread -s
+CFLAGS=-Ofast -march=native -flto -ffunction-sections -fdata-sections  \
+			 -std=c++17 -MMD
 
 # Output binary name
 EXECUTABLE=raytracer
@@ -50,7 +50,7 @@ $(OBJECT)/$(TESTPATH)/%.o: $(TESTPATH)/%.cpp
 
 # Clean build.
 clean:
-	rm -rf $(BINARY)/*
+	rm -f $(BINARY)/{raytracer,test}
 	rm -rf $(OBJECT)/*
 	mkdir -p $(OBJECT)/$(SOURCE)
 	mkdir -p $(OBJECT)/$(TESTPATH)
