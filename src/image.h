@@ -1,53 +1,55 @@
 #pragma once
 
 class Image {
-	public:
-		enum Format {
-			BMP,
-			INVALID	// This doubles as an accessor to the number of valid states. Must be last.
-		};
+ public:
+  enum Format {
+    BMP,
+    INVALID  // This doubles as an accessor to the number of valid states. Must
+             // be last.
+  };
 
-		static const char *formats[];
+  static const char *formats[];
 
-		static const char *errorStrings[];
+  static const char *errorStrings[];
 
-		void error(unsigned int, const char*);
-	private:
-		bool success;
-		const char *errorString;
-		const char *detailedErrorString;
+  void error(unsigned int, const char *);
 
-		unsigned int width, height;
-		unsigned char *data;
+ private:
+  bool success;
+  const char *errorString;
+  const char *detailedErrorString;
 
-		void loadBMP(const char*);
+  unsigned int width, height;
+  unsigned char *data;
 
-		bool saveBMP(const char*);
+  void loadBMP(const char *);
 
-		void cleanup();
-		void clone(const Image&);
-	public:
-		// Class construction / destruction.
-		Image(unsigned int, unsigned int);
-		Image(const char*);
-		Image(const Image&);
-		~Image();
+  bool saveBMP(const char *);
 
-		// Copy.
-		void operator=(const Image&);
+  void cleanup();
+  void clone(const Image &);
 
-		// Pixel access.
-		unsigned int getWidth() const;
-		unsigned int getHeight() const;
-		unsigned char *operator()(unsigned int, unsigned int) const;
+ public:
+  // Class construction / destruction.
+  Image(unsigned int, unsigned int);
+  Image(const char *);
+  Image(const Image &);
+  ~Image();
 
-		// Manipulation.
-		void draw(const Image&, unsigned int, unsigned int);
+  // Copy.
+  void operator=(const Image &);
 
-		// File I/O
-		void load(const char*);
-		bool save(const char*);
-		bool good() const;
-		void printError() const;
+  // Pixel access.
+  unsigned int getWidth() const;
+  unsigned int getHeight() const;
+  unsigned char *operator()(unsigned int, unsigned int) const;
+
+  // Manipulation.
+  void draw(const Image &, unsigned int, unsigned int);
+
+  // File I/O
+  void load(const char *);
+  bool save(const char *);
+  bool good() const;
+  void printError() const;
 };
-

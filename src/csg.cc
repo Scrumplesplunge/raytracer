@@ -1,6 +1,3 @@
 #include "csg.h"
 
-const char *CSG::name() const {
-	return "CSG";
-}
-
+const char *CSG::name() const { return "CSG"; }

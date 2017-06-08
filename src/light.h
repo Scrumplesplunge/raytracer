@@ -1,18 +1,19 @@
 #pragma once
 
-#include "vector.h"
+#include "material.h"
 #include "shape.h"
 #include "trace_res.h"
-#include "material.h"
+#include "vector.h"
 
 class Light : public Material {
-	private:
-		Vector color;
-	public:
-		Light(const Vector&);
+ private:
+  Vector color;
 
-		virtual Vector outgoingLight(Shape*, const TraceRes&, const Vector&, real) const;
+ public:
+  Light(const Vector &);
 
-		virtual const char *name() const;
+  virtual Vector outgoingLight(Shape *, const TraceRes &, const Vector &,
+                               real) const;
+
+  virtual const char *name() const;
 };
-

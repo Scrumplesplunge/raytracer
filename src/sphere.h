@@ -5,22 +5,22 @@
 #include "vector.h"
 
 class Sphere : public Primitive {
-	private:
-		Vector position;
-		real radius, squareRadius;
-	public:
-		Sphere(const Vector&, real);
+ private:
+  Vector position;
+  real radius, squareRadius;
 
-		virtual Array<TraceRes> trace(const Ray&) const;
-		virtual bool contains(const Vector&) const;
-		virtual const char *name() const;
+ public:
+  Sphere(const Vector &, real);
 
-		virtual real minX() const;
-		virtual real minY() const;
-		virtual real minZ() const;
+  virtual Array<TraceRes> trace(const Ray &) const;
+  virtual bool contains(const Vector &) const;
+  virtual const char *name() const;
 
-		virtual real maxX() const;
-		virtual real maxY() const;
-		virtual real maxZ() const;
+  virtual real minX() const;
+  virtual real minY() const;
+  virtual real minZ() const;
+
+  virtual real maxX() const;
+  virtual real maxY() const;
+  virtual real maxZ() const;
 };
-

@@ -1,6 +1,3 @@
 #include "primitive.h"
 
-const char *Primitive::name() const {
-	return "Primitive";
-}
-
+const char *Primitive::name() const { return "Primitive"; }

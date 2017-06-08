@@ -5,19 +5,19 @@
 #include "ray.h"
 
 class Camera {
-	private:
-		Matrix transform;
-		unsigned int width, height;
-		real mul;
-	public:
-		Camera(unsigned int, unsigned int, real);
+ private:
+  Matrix transform;
+  unsigned int width, height;
+  real mul;
 
-		void moveTo(const Vector&);
-		void lookAt(const Vector&);
+ public:
+  Camera(unsigned int, unsigned int, real);
 
-		unsigned int getWidth() const;
-		unsigned int getHeight() const;
+  void moveTo(const Vector&);
+  void lookAt(const Vector&);
 
-		Ray getRay(real, real, unsigned int);
+  unsigned int getWidth() const;
+  unsigned int getHeight() const;
+
+  Ray getRay(real, real, unsigned int);
 };
-

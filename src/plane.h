@@ -5,22 +5,22 @@
 #include "vector.h"
 
 class Plane : public Primitive {
-	private:
-		Vector normal;
-		real offset;
-	public:
-		Plane(const Vector&, const Vector&);
+ private:
+  Vector normal;
+  real offset;
 
-		virtual Array<TraceRes> trace(const Ray&) const;
-		virtual bool contains(const Vector&) const;
-		virtual const char *name() const;
+ public:
+  Plane(const Vector &, const Vector &);
 
-		virtual real minX() const;
-		virtual real minY() const;
-		virtual real minZ() const;
+  virtual Array<TraceRes> trace(const Ray &) const;
+  virtual bool contains(const Vector &) const;
+  virtual const char *name() const;
 
-		virtual real maxX() const;
-		virtual real maxY() const;
-		virtual real maxZ() const;
+  virtual real minX() const;
+  virtual real minY() const;
+  virtual real minZ() const;
+
+  virtual real maxX() const;
+  virtual real maxY() const;
+  virtual real maxZ() const;
 };
-
