@@ -30,8 +30,8 @@ bin/%:
 	@${CXX} ${LDFLAGS} $^ -o $@ ${LDLIBS}
 
 # Pattern rule for generated files.
-.PRECIOUS: gen/%.cpp gen/%.h
-gen/%.cpp gen/%.h: src/gen_%.sh src/%.txt
+.PRECIOUS: gen/%.cc gen/%.h
+gen/%.cc gen/%.h: src/gen_%.sh src/%.txt
 	@echo Generating $*
 	@mkdir -p gen/$(dir $*)
 	@$^
@@ -39,14 +39,14 @@ gen/%.cpp gen/%.h: src/gen_%.sh src/%.txt
 GENERATORS = $(shell find src -name 'gen_*.sh')
 GENERATED = $(patsubst src/gen_%.sh, gen/%.h, ${GENERATORS})
 
-# Pattern rule for compiling a cpp file into an o file.
-obj/%.o: src/%.cpp $(wildcard src/%.h) | ${GENERATED}
+# Pattern rule for compiling a cc file into an o file.
+obj/%.o: src/%.cc $(wildcard src/%.h) | ${GENERATED}
 	@echo Compiling $*
 	@mkdir -p {obj,dep}/$(dir $*)
 	@${CXX} ${CXXFLAGS} ${CPPFLAGS} -MMD -MF dep/$*.d $< -c -o obj/$*.o
 
-# Pattern rule for compiling a generated cpp file into an o file.
-obj/%.o: gen/%.cpp $(wildcard gen/%.h)
+# Pattern rule for compiling a generated cc file into an o file.
+obj/%.o: gen/%.cc $(wildcard gen/%.h)
 	@echo Compiling $*
 	@mkdir -p {obj,dep}/$(dir $*)
 	@${CXX} ${CXXFLAGS} ${CPPFLAGS} -MMD -MF dep/$*.d $< -c -o obj/$*.o

@@ -8,29 +8,29 @@ BINARIES =  \
 all: $(patsubst %, bin/%, ${BINARIES})
 
 RAYTRACER_DEPS =  \
-	Camera  \
-	CSGComplement  \
-	CSG  \
-	CSGIntersection  \
-	CSGUnion  \
-	Die  \
-	Diffuse  \
-	Glass  \
-	Image  \
-	Light  \
-	Material  \
-	Matrix  \
-	Plane  \
-	Primitive  \
-	Random  \
-	Ray  \
-	Render  \
-	Shape  \
-	Sky  \
-	Sphere  \
-	TraceRes  \
-	Vector  \
-	Main
+	camera  \
+	csg_complement  \
+	csg  \
+	csg_intersection  \
+	csg_union  \
+	die  \
+	diffuse  \
+	glass  \
+	image  \
+	light  \
+	material  \
+	matrix  \
+	plane  \
+	primitive  \
+	random  \
+	ray  \
+	render  \
+	shape  \
+	sky  \
+	sphere  \
+	trace_res  \
+	vector  \
+	main
 bin/raytracer: $(patsubst %, obj/%.o, ${RAYTRACER_DEPS})
 
 -include ${DEPENDS}
