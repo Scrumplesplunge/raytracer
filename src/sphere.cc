@@ -92,15 +92,3 @@ bool Sphere::contains(Vector vec) const {
 }
 
 const char* Sphere::name() const { return "Sphere"; }
-
-real Sphere::minX() const { return position.x - radius; }
-
-real Sphere::minY() const { return position.y - radius; }
-
-real Sphere::minZ() const { return position.z - radius; }
-
-real Sphere::maxX() const { return position.x + radius; }
-
-real Sphere::maxY() const { return position.y + radius; }
-
-real Sphere::maxZ() const { return position.z + radius; }

@@ -50,33 +50,3 @@ bool Plane::contains(Vector vec) const {
 }
 
 const char* Plane::name() const { return "Plane"; }
-
-real Plane::minX() const {
-  return (-1 - EPSILON <= normal.x && normal.x <= -1 + EPSILON) ? -offset
-                                                                : -INFINITY;
-}
-
-real Plane::minY() const {
-  return (-1 - EPSILON <= normal.y && normal.y <= -1 + EPSILON) ? -offset
-                                                                : -INFINITY;
-}
-
-real Plane::minZ() const {
-  return (-1 - EPSILON <= normal.z && normal.z <= -1 + EPSILON) ? -offset
-                                                                : -INFINITY;
-}
-
-real Plane::maxX() const {
-  return (1 - EPSILON <= normal.x && normal.x <= 1 + EPSILON) ? offset
-                                                              : INFINITY;
-}
-
-real Plane::maxY() const {
-  return (1 - EPSILON <= normal.y && normal.y <= 1 + EPSILON) ? offset
-                                                              : INFINITY;
-}
-
-real Plane::maxZ() const {
-  return (1 - EPSILON <= normal.z && normal.z <= 1 + EPSILON) ? offset
-                                                              : INFINITY;
-}
