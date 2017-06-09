@@ -8,7 +8,7 @@ CSGUnion::CSGUnion() {}
 
 void CSGUnion::add(const Shape* shape) { contents.push_back(shape); }
 
-std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
+std::vector<TraceRes> CSGUnion::Trace(const Ray& ray) const {
   Ray rayCopy(ray);
 
   // These are required for CSG.
@@ -21,7 +21,7 @@ std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
   bool inside = false;
   for (unsigned int i = 0; i < contents.size(); i++) {
     // Results from one branch, merged in with existing output.
-    std::vector<TraceRes> branch_boundaries = contents[i]->trace(rayCopy);
+    std::vector<TraceRes> branch_boundaries = contents[i]->Trace(rayCopy);
     std::vector<TraceRes> merged_boundaries;
     std::merge(boundaries.begin(), boundaries.end(),
                branch_boundaries.begin(), branch_boundaries.end(),
@@ -32,7 +32,7 @@ std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
 
     // Set the initial state of the semaphore.
     if (inside) sem++;
-    bool isContained = contents[i]->contains(rayCopy.start);
+    bool isContained = contents[i]->Contains(rayCopy.start);
     if (isContained) sem++;
     inside = inside || isContained;
 
@@ -53,14 +53,11 @@ std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGUnion::contains(Vector vec) const {
-  bool out = false;
-
-  for (unsigned int i = 0; i < contents.size(); i++) {
-    out = out || contents[i]->contains(vec);
-  }
-
-  return out;
+bool CSGUnion::Contains(Vector point) const {
+  auto contains_point = [&](const Shape* shape) {
+    return shape->Contains(point);
+  };
+  return std::any_of(contents.begin(), contents.end(), contains_point);
 }
 
-const char* CSGUnion::name() const { return "CSG Union"; }
+const char* CSGUnion::Name() const { return "CSG Union"; }

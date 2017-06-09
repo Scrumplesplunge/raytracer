@@ -46,7 +46,7 @@ Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
 CSGUnion room;
 
 Vector raytrace(Shape *scene, Ray ray) {
-  std::vector<TraceRes> res(scene->trace(ray));
+  std::vector<TraceRes> res(scene->Trace(ray));
   if (res.size() == 0) {
     return {1, 0, 1};
   } else {

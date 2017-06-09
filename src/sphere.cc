@@ -5,7 +5,7 @@
 Sphere::Sphere(Vector p, real r)
     : position(p), radius(r), squareRadius(r * r) {}
 
-std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
+std::vector<TraceRes> Sphere::Trace(const Ray& ray) const {
   /*
     A = d . d := 1 because ray.direction is always unit.
 
@@ -86,9 +86,9 @@ std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
   return {near, far};
 }
 
-bool Sphere::contains(Vector vec) const {
-  Vector offset = vec - position;
+bool Sphere::Contains(Vector point) const {
+  Vector offset = point - position;
   return dot(offset, offset) < squareRadius;
 }
 
-const char* Sphere::name() const { return "Sphere"; }
+const char* Sphere::Name() const { return "Sphere"; }

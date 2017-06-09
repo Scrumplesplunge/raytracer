@@ -3,14 +3,14 @@
 
 CSGComplement::CSGComplement(const Shape* shape) : contents(shape) {}
 
-std::vector<TraceRes> CSGComplement::trace(const Ray& ray) const {
+std::vector<TraceRes> CSGComplement::Trace(const Ray& ray) const {
   Ray rayCopy(ray);
 
   // Required for CSG.
   rayCopy.mask |= TraceRes::ENTERING;
 
   // Perform the trace.
-  std::vector<TraceRes> boundaries = contents->trace(ray);
+  std::vector<TraceRes> boundaries = contents->Trace(ray);
 
   // Take its complement.
   for (TraceRes& boundary : boundaries) {
@@ -25,8 +25,8 @@ std::vector<TraceRes> CSGComplement::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGComplement::contains(Vector vec) const {
-  return !contents->contains(vec);
+bool CSGComplement::Contains(Vector point) const {
+  return !contents->Contains(point);
 }
 
-const char* CSGComplement::name() const { return "CSG Complement"; }
+const char* CSGComplement::Name() const { return "CSG Complement"; }

@@ -26,7 +26,7 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
     // Trace the reflective ray.
     Ray reflectiveRay(hit.position + norm * EPSILON, children.reflect,
                       TraceRes::ALL);
-    std::vector<TraceRes> res2 = scene->trace(reflectiveRay);
+    std::vector<TraceRes> res2 = scene->Trace(reflectiveRay);
     if (res2.size() > 0) {
       real mul = children.weight;
       Vector temp = res2[0].primitive->material->outgoingLight(
@@ -37,7 +37,7 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
     // Trace the refractive ray.
     Ray refractiveRay(hit.position - norm * EPSILON, children.refract,
                       TraceRes::ALL);
-    std::vector<TraceRes> res = scene->trace(refractiveRay);
+    std::vector<TraceRes> res = scene->Trace(refractiveRay);
     if (res.size() > 0) {
       real mul = (1 - children.weight);
       Vector temp = res[0].primitive->material->outgoingLight(

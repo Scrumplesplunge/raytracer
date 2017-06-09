@@ -3,7 +3,7 @@
 Plane::Plane(Vector pos, Vector norm)
     : normal(norm.normalized()), offset(dot(pos, normal)) {}
 
-std::vector<TraceRes> Plane::trace(const Ray& ray) const {
+std::vector<TraceRes> Plane::Trace(const Ray& ray) const {
   // Component of ray direction in the direction of the surface normal.
   real a = dot(ray.direction, normal);
 
@@ -45,8 +45,8 @@ std::vector<TraceRes> Plane::trace(const Ray& ray) const {
   return {hit};
 }
 
-bool Plane::contains(Vector vec) const {
-  return dot(vec, normal) < offset;
+bool Plane::Contains(Vector point) const {
+  return dot(point, normal) < offset;
 }
 
-const char* Plane::name() const { return "Plane"; }
+const char* Plane::Name() const { return "Plane"; }

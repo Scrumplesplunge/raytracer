@@ -14,7 +14,7 @@ class Plane : public Primitive {
  public:
   Plane(Vector, Vector);
 
-  std::vector<TraceRes> trace(const Ray &) const override;
-  bool contains(Vector) const override;
-  const char *name() const override;
+  std::vector<TraceRes> Trace(const Ray& ray) const override;
+  bool Contains(Vector point) const override;
+  const char* Name() const override;
 };

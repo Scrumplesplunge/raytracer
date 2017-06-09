@@ -8,7 +8,7 @@
 
 class Shape {
  public:
-  virtual std::vector<TraceRes> trace(const Ray &) const = 0;
-  virtual bool contains(Vector) const = 0;
-  virtual const char *name() const;
+  virtual std::vector<TraceRes> Trace(const Ray& ray) const = 0;
+  virtual bool Contains(Vector point) const = 0;
+  virtual const char* Name() const;
 };

@@ -8,7 +8,7 @@ CSGIntersection::CSGIntersection() {}
 
 void CSGIntersection::add(const Shape* shape) { contents.push_back(shape); }
 
-std::vector<TraceRes> CSGIntersection::trace(const Ray& ray) const {
+std::vector<TraceRes> CSGIntersection::Trace(const Ray& ray) const {
   Ray rayCopy(ray);
 
   // These are required for CSG.
@@ -16,10 +16,10 @@ std::vector<TraceRes> CSGIntersection::trace(const Ray& ray) const {
 
   if (contents.size() == 0) return {};
 
-  std::vector<TraceRes> boundaries = contents[0]->trace(rayCopy);
+  std::vector<TraceRes> boundaries = contents[0]->Trace(rayCopy);
 
   // Keep track of whether the start is inside the CSGIntersection shape.
-  bool inside = contents[0]->contains(rayCopy.start);
+  bool inside = contents[0]->Contains(rayCopy.start);
 
   // If there are no intersections and we aren't inside, then there is no
   // intersection at all.
@@ -27,8 +27,8 @@ std::vector<TraceRes> CSGIntersection::trace(const Ray& ray) const {
 
   for (unsigned int i = 1; i < contents.size(); i++) {
     // Results from one branch, merged in with existing output.
-    std::vector<TraceRes> branch_boundaries = contents[i]->trace(rayCopy);
-    bool isContained = contents[i]->contains(rayCopy.start);
+    std::vector<TraceRes> branch_boundaries = contents[i]->Trace(rayCopy);
+    bool isContained = contents[i]->Contains(rayCopy.start);
 
     if (branch_boundaries.size() == 0) {
       // Intersect with universe is identity.
@@ -68,16 +68,11 @@ std::vector<TraceRes> CSGIntersection::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGIntersection::contains(Vector vec) const {
-  if (contents.size() == 0) return false;
-
-  bool out = true;
-
-  for (unsigned int i = 0; i < contents.size(); i++) {
-    out = out && contents[i]->contains(vec);
-  }
-
-  return out;
+bool CSGIntersection::Contains(Vector point) const {
+  auto contains_point = [&](const Shape* shape) {
+    return shape->Contains(point);
+  };
+  return std::all_of(contents.begin(), contents.end(), contains_point);
 }
 
-const char* CSGIntersection::name() const { return "CSG Intersection"; }
+const char* CSGIntersection::Name() const { return "CSG Intersection"; }
