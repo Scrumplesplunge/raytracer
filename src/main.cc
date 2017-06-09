@@ -55,7 +55,7 @@ Vector raytrace(Shape *scene, Ray ray) {
   }
 }
 
-int main(int argc, char *args[]) {
+int main() {
   // Test image writing.
   if (!sky.good()) {
     sky.printError();

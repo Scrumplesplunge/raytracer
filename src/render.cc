@@ -3,6 +3,7 @@
 #include "ray.h"
 
 #include <algorithm>
+#include <vector>
 
 std::uniform_real_distribution<real> real_rand(0, 1);
 
@@ -32,10 +33,10 @@ Image Render::operator()() {
   currentChunk = 0;
   numPasses++;
 
-  std::thread threads[numThreads];
+  std::vector<std::thread> threads;
   for (unsigned int i = 0; i < numThreads; i++)
-    threads[i] = std::thread(RenderChunk, this);
-  for (unsigned int i = 0; i < numThreads; i++) threads[i].join();
+    threads.push_back(std::thread(RenderChunk, this));
+  for (auto& thread : threads) thread.join();
 
   return output;
 }

@@ -15,7 +15,7 @@ struct Vector {
 #define MAP_OPERATOR(op)  \
   Vector operator op(Vector a, Vector b);  \
   Vector operator op(real a, Vector b);  \
-  Vector operator op(Vector a, real b);
+  Vector operator op(Vector a, real b)
 MAP_OPERATOR(+);
 MAP_OPERATOR(-);
 MAP_OPERATOR(*);

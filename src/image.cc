@@ -394,7 +394,11 @@ unsigned int Image::getWidth() const { return width; }
 unsigned int Image::getHeight() const { return height; }
 
 unsigned char *Image::operator()(unsigned int x, unsigned int y) const {
-  if (x < 0 || width <= x || y < 0 || height <= y) return NULL;
+  if (width <= x || height <= y) {
+    throw std::logic_error(
+        "Accessing bad index in bitmap: (" + std::to_string(x) + ", " +
+        std::to_string(y) + ").");
+  }
   return data + 3 * (width * y + x);
 }
 

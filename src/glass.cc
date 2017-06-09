@@ -43,9 +43,9 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
       Vector temp = res[0].primitive->material->outgoingLight(
           scene, res[0], -children.refract, significance * mul);
       if (hit.entering) {
-        return {temp.x * pow(color.x, res[0].distance),
-                temp.y * pow(color.y, res[0].distance),
-                temp.z * pow(color.z, res[0].distance)};
+        return temp * Vector{std::pow(color.x, res[0].distance),
+                             std::pow(color.y, res[0].distance),
+                             std::pow(color.z, res[0].distance)};
       } else {
         return temp;
       }

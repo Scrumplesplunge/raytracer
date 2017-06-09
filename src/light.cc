@@ -4,8 +4,9 @@
 
 Light::Light(Vector col) : color(col) {}
 
-Vector Light::outgoingLight(Shape* scene, const TraceRes& hit,
-                            Vector direction, real significance) const {
+Vector Light::outgoingLight(
+    Shape* /* scene */, const TraceRes& /* hit */, Vector /* direction */,
+    real /* significance */) const {
   return color;
 }
 

@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++1z
+CXXFLAGS += -std=c++1z -Wall -Wextra -pedantic
 opt: CXXFLAGS += -ffunction-sections -fdata-sections -flto -O3
 debug: CXXFLAGS += -O0 -g
 

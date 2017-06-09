@@ -33,10 +33,10 @@ Vector Vector::random() {
             a.y op b,  \
             a.z op b};  \
   }
-MAP_OPERATOR(+);
-MAP_OPERATOR(-);
-MAP_OPERATOR(*);
-MAP_OPERATOR(/);
+MAP_OPERATOR(+)
+MAP_OPERATOR(-)
+MAP_OPERATOR(*)
+MAP_OPERATOR(/)
 #undef MAP_OPERATOR
 
 Vector operator-(Vector v) {
