@@ -14,7 +14,7 @@ class Diffuse : public Material {
  public:
   Diffuse(real, Vector);
 
-  virtual Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const;
+  Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
 
-  virtual const char *name() const;
+  const char *name() const override;
 };

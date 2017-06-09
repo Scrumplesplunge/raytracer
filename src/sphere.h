@@ -14,7 +14,7 @@ class Sphere : public Primitive {
  public:
   Sphere(Vector, real);
 
-  virtual std::vector<TraceRes> trace(const Ray &) const;
-  virtual bool contains(Vector) const;
-  virtual const char *name() const;
+  std::vector<TraceRes> trace(const Ray &) const override;
+  bool contains(Vector) const override;
+  const char *name() const override;
 };
