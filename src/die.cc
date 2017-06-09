@@ -65,5 +65,5 @@ Die::Die(const Matrix &orientation, Material *material)
                           &five1,  &five2,  &five3,  &five4,  &six0,   &six1,
                           &six2,   &six3,   &six4,   &six5};
   unsigned int num_intersected = sizeof(intersected) / sizeof(Shape *);
-  for (unsigned int i = 0; i < num_intersected; i++) add(intersected[i]);
+  for (unsigned int i = 0; i < num_intersected; i++) Add(intersected[i]);
 }

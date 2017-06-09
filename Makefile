@@ -9,10 +9,7 @@ all: $(patsubst %, bin/%, ${BINARIES})
 
 RAYTRACER_DEPS =  \
 	camera  \
-	csg_complement  \
 	csg  \
-	csg_intersection  \
-	csg_union  \
 	die  \
 	diffuse  \
 	glass  \

@@ -2,7 +2,40 @@
 
 #include "shape.h"
 
-class CSG : public Shape {
+#include <vector>
+
+class Union : public Shape {
  public:
-  const char *name() const;
+  void Add(const Shape* shape);
+
+  std::vector<TraceRes> Trace(const Ray& ray) const override;
+  bool Contains(Vector point) const override;
+  const char* Name() const override;
+
+ private:
+  std::vector<const Shape*> contents_;
+};
+
+class Intersection : public Shape {
+ public:
+  void Add(const Shape* shape);
+
+  std::vector<TraceRes> Trace(const Ray& ray) const override;
+  bool Contains(Vector point) const override;
+  const char* Name() const override;
+
+ private:
+  std::vector<const Shape*> contents_;
+};
+
+class Complement : public Shape {
+ public:
+  Complement(const Shape* shape);
+
+  std::vector<TraceRes> Trace(const Ray& ray) const override;
+  bool Contains(Vector point) const override;
+  const char* Name() const override;
+
+ private:
+  const Shape* shape_;
 };
