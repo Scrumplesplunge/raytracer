@@ -1,6 +1,5 @@
 #include "camera.h"
 #include "config.h"
-#include "csg_union.h"
 #include "die.h"
 #include "diffuse.h"
 #include "glass.h"
@@ -43,7 +42,7 @@ Plane box_wall_left({0, 2, 0}, {0, -1, 0});
 Plane box_wall_right({0, -2, 0}, {0, 1, 0});
 Plane box_wall_far({2, 0, 0}, {-1, 0, 0});
 Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
-CSGUnion room;
+Union room;
 
 Vector raytrace(Shape *scene, Ray ray) {
   std::vector<TraceRes> res(scene->Trace(ray));
@@ -68,15 +67,15 @@ int main() {
   box_wall_left.material = &red;
   box_wall_right.material = &green;
 
-  room.add(&source);
-  room.add(&die);
-  room.add(&die2);
-  room.add(&box_floor);
-  room.add(&box_ceil);
-  room.add(&box_wall_left);
-  room.add(&box_wall_right);
-  room.add(&box_wall_far);
-  room.add(&box_wall_behind);
+  room.Add(&source);
+  room.Add(&die);
+  room.Add(&die2);
+  room.Add(&box_floor);
+  room.Add(&box_ceil);
+  room.Add(&box_wall_left);
+  room.Add(&box_wall_right);
+  room.Add(&box_wall_far);
+  room.Add(&box_wall_behind);
 
   Camera cam(3840, 2160, 0.4);
   cam.MoveTo({-10, 1, 1.5});
