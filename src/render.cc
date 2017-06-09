@@ -2,6 +2,8 @@
 #include "random.h"
 #include "ray.h"
 
+#include <algorithm>
+
 std::uniform_real_distribution<real> real_rand(0, 1);
 
 Render::Render(Vector (*renderPixelFunc)(Shape *, Ray), Shape *s, Camera c)
@@ -9,8 +11,8 @@ Render::Render(Vector (*renderPixelFunc)(Shape *, Ray), Shape *s, Camera c)
       currentChunk(0),
       numChunks(0),
       numPasses(0),
-      buffer(new Vector[c.getWidth() * c.getHeight()]),
-      output(c.getWidth(), c.getHeight()),
+      buffer(new Vector[c.width() * c.height()]),
+      output(c.width(), c.height()),
       cam(c),
       shape(s),
       subPixels(1),
@@ -25,8 +27,8 @@ Render::Render(Vector (*renderPixelFunc)(Shape *, Ray), Shape *s, Camera c)
 Render::~Render() { delete[] buffer; }
 
 Image Render::operator()() {
-  numChunks = ((cam.getWidth() + chunkWidth - 1) / chunkWidth) *
-              ((cam.getHeight() + chunkHeight - 1) / chunkHeight);
+  numChunks = ((cam.width() + chunkWidth - 1) / chunkWidth) *
+              ((cam.height() + chunkHeight - 1) / chunkHeight);
   currentChunk = 0;
   numPasses++;
 
@@ -52,15 +54,11 @@ void Render::RenderChunk(Render *parent) {
 
     // Calculate the chunk coordinates.
     unsigned int chunksPerRow =
-        (parent->cam.getWidth() + parent->chunkWidth - 1) / parent->chunkWidth;
+        (parent->cam.width() + parent->chunkWidth - 1) / parent->chunkWidth;
     unsigned int x = parent->chunkWidth * (chunk % chunksPerRow);
     unsigned int y = parent->chunkHeight * (chunk / chunksPerRow);
-    unsigned int x2 = (x + parent->chunkWidth <= parent->cam.getWidth())
-                          ? x + parent->chunkWidth
-                          : parent->cam.getWidth();
-    unsigned int y2 = (y + parent->chunkHeight <= parent->cam.getHeight())
-                          ? y + parent->chunkHeight
-                          : parent->cam.getHeight();
+    unsigned int x2 = std::min(x + parent->chunkWidth, parent->cam.width());
+    unsigned int y2 = std::min(y + parent->chunkHeight, parent->cam.height());
 
     Image output(x2 - x, y2 - y);
 
@@ -72,11 +70,11 @@ void Render::RenderChunk(Render *parent) {
         if (parent->subPixels == 0) {
           color = parent->renderPixel(
               parent->shape,
-              parent->cam.getRay(xi + 0.5, yi + 0.5, parent->baseMask));
+              parent->cam.GetRay(xi + 0.5, yi + 0.5, parent->baseMask));
         } else {
           for (unsigned int i = 0, im = parent->subPixels; i < im; i++) {
             // Create a ray and trace it.
-            Ray ray(parent->cam.getRay(xi + real_rand(RandomGenerator()),
+            Ray ray(parent->cam.GetRay(xi + real_rand(RandomGenerator()),
                                        yi + real_rand(RandomGenerator()),
                                        parent->baseMask));
             color = color + parent->renderPixel(parent->shape, ray);
@@ -86,7 +84,7 @@ void Render::RenderChunk(Render *parent) {
           color = color / parent->subPixels;
         }
 
-        Vector *ptr = parent->buffer + parent->cam.getWidth() * yi + xi;
+        Vector *ptr = parent->buffer + parent->cam.width() * yi + xi;
 
         // Store the sum of all colours; used for calculating fine average over
         // time.

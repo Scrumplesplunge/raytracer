@@ -79,8 +79,8 @@ int main(int argc, char *args[]) {
   room.add(&box_wall_behind);
 
   Camera cam(3840, 2160, 0.4);
-  cam.moveTo({-10, 1, 1.5});
-  cam.lookAt({0.75, -0.2, 0});
+  cam.MoveTo({-10, 1, 1.5});
+  cam.LookAt({0.75, -0.2, 0});
 
   Render render(raytrace, &room, cam);
   render.numThreads = 8;
