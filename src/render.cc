@@ -76,8 +76,8 @@ void Render::RenderChunk(Render *parent) {
         } else {
           for (unsigned int i = 0, im = parent->subPixels; i < im; i++) {
             // Create a ray and trace it.
-            Ray ray(parent->cam.getRay(xi + real_rand(random_generator),
-                                       yi + real_rand(random_generator),
+            Ray ray(parent->cam.getRay(xi + real_rand(RandomGenerator()),
+                                       yi + real_rand(RandomGenerator()),
                                        parent->baseMask));
             color = color + parent->renderPixel(parent->shape, ray);
           }

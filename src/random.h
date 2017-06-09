@@ -1,4 +1,5 @@
 #pragma once
 #include <random>
 
-extern std::default_random_engine random_generator;
+using random_generator = std::mt19937;
+random_generator& RandomGenerator();

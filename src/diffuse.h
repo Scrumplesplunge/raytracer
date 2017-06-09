@@ -12,10 +12,9 @@ class Diffuse : public Material {
   Vector color;
 
  public:
-  Diffuse(real, const Vector &);
+  Diffuse(real, Vector);
 
-  virtual Vector outgoingLight(Shape *, const TraceRes &, const Vector &,
-                               real) const;
+  virtual Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const;
 
   virtual const char *name() const;
 };

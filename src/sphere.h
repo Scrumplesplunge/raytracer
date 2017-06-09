@@ -12,10 +12,10 @@ class Sphere : public Primitive {
   real radius, squareRadius;
 
  public:
-  Sphere(const Vector &, real);
+  Sphere(Vector, real);
 
   virtual std::vector<TraceRes> trace(const Ray &) const;
-  virtual bool contains(const Vector &) const;
+  virtual bool contains(Vector) const;
   virtual const char *name() const;
 
   virtual real minX() const;

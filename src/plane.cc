@@ -1,6 +1,6 @@
 #include "plane.h"
 
-Plane::Plane(const Vector& pos, const Vector& norm)
+Plane::Plane(Vector pos, Vector norm)
     : normal(norm.normalized()), offset(dot(pos, normal)) {}
 
 std::vector<TraceRes> Plane::trace(const Ray& ray) const {
@@ -45,7 +45,7 @@ std::vector<TraceRes> Plane::trace(const Ray& ray) const {
   return {hit};
 }
 
-bool Plane::contains(const Vector& vec) const {
+bool Plane::contains(Vector vec) const {
   return dot(vec, normal) < offset;
 }
 

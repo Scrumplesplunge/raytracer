@@ -9,14 +9,15 @@ class Matrix {
 
  public:
   Matrix();
-  Matrix(const Vector&, const Vector&, const Vector&, const Vector&);
+  Matrix(Vector, Vector, Vector, Vector);
 
-  Matrix translate(const Vector&) const;
+  Matrix translate(Vector) const;
   Matrix rotateX(real) const;
   Matrix rotateY(real) const;
   Matrix rotateZ(real) const;
 
-  Vector operator()(const Vector&) const;
+  // Rotate but do not translate.
+  Vector operator()(Vector) const;
 };
 
-Vector operator*(const Matrix&, const Vector&);
+Vector operator*(const Matrix&, Vector);

@@ -13,8 +13,8 @@ class Camera {
  public:
   Camera(unsigned int, unsigned int, real);
 
-  void moveTo(const Vector&);
-  void lookAt(const Vector&);
+  void moveTo(Vector);
+  void lookAt(Vector);
 
   unsigned int getWidth() const;
   unsigned int getHeight() const;

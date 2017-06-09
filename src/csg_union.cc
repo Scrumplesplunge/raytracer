@@ -53,7 +53,7 @@ std::vector<TraceRes> CSGUnion::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGUnion::contains(const Vector& vec) const {
+bool CSGUnion::contains(Vector vec) const {
   bool out = false;
 
   for (unsigned int i = 0; i < contents.size(); i++) {

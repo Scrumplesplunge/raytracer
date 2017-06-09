@@ -18,33 +18,37 @@
 #include <cmath>
 #include <iostream>
 
-Glass glass(Vector(0.8, 0.9, 0.9));
-Diffuse white(1, Vector(1, 1, 1)), red(1, Vector(1, 0.1, 0)),
-    green(1, Vector(0.1, 1, 0));
-Light light(Vector(1, 1, 1));
+Glass glass({0.8, 0.9, 0.9});
+Diffuse white(1, {1, 1, 1}), red(1, {1, 0.1, 0}),
+    green(1, {0.1, 1, 0});
+Light light({1, 1, 1});
 Sky sky("assets/sky.bmp");
 
-Die die(Matrix(Vector(0.9511, 0.3090, 0), Vector(-0.3090, 0.9511, 0),
-               Vector(0, 0, 1), Vector(-1, -0.6, 0)),
-        &glass);
-Die die2(Matrix(Vector(0.9511, -0.3090, 0), Vector(0.3090, 0.9511, 0),
-                Vector(0, 0, 1), Vector(-0.5, 0.6, 0)),
-         &white);
+Die die(Matrix({0.9511, 0.3090, 0},
+               {-0.3090, 0.9511, 0},
+               {0, 0, 1},
+               {1, -0.6, 0}),
+        &white);
+Die die2(Matrix({0.9511, -0.3090, 0},
+                {0.3090, 0.9511, 0},
+                {0, 0, 1},
+                {-0.5, 0.6, 0}),
+         &glass);
 
-Sphere source(Vector(1, 0, 2), 0.5);
+Sphere source({1, 0, 2}, 0.5);
 
-Plane box_floor(Vector(0, 0, -0.501), Vector(0, 0, 1));
-Plane box_ceil(Vector(0, 0, 3.5), Vector(0, 0, -1));
-Plane box_wall_left(Vector(0, 2, 0), Vector(0, -1, 0));
-Plane box_wall_right(Vector(0, -2, 0), Vector(0, 1, 0));
-Plane box_wall_far(Vector(2, 0, 0), Vector(-1, 0, 0));
-Plane box_wall_behind(Vector(-10.1, 0, 0), Vector(1, 0, 0));
+Plane box_floor({0, 0, -0.501}, {0, 0, 1});
+Plane box_ceil({0, 0, 3.5}, {0, 0, -1});
+Plane box_wall_left({0, 2, 0}, {0, -1, 0});
+Plane box_wall_right({0, -2, 0}, {0, 1, 0});
+Plane box_wall_far({2, 0, 0}, {-1, 0, 0});
+Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
 CSGUnion room;
 
 Vector raytrace(Shape *scene, Ray ray) {
   std::vector<TraceRes> res(scene->trace(ray));
   if (res.size() == 0) {
-    return Vector(1, 0, 1);
+    return {1, 0, 1};
   } else {
     return res[0].primitive->material->outgoingLight(scene, res[0],
                                                      -ray.direction, 1);
@@ -74,15 +78,15 @@ int main(int argc, char *args[]) {
   room.add(&box_wall_far);
   room.add(&box_wall_behind);
 
-  Camera cam(384, 216, 0.4);
-  cam.moveTo(Vector(-10, 1, 1.5));
-  cam.lookAt(Vector(0.75, -0.2, 0));
+  Camera cam(3840, 2160, 0.4);
+  cam.moveTo({-10, 1, 1.5});
+  cam.lookAt({0.75, -0.2, 0});
 
   Render render(raytrace, &room, cam);
-  render.numThreads = 16;
+  render.numThreads = 8;
   render.subPixels = 1;
   render.brightness = 0;
-  render.contrast = 5;
+  render.contrast = 10;
 
   for (unsigned int i = 0; i < 100; i++) {
     Image canvas(render());

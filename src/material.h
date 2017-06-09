@@ -12,12 +12,12 @@ class Material {
     Vector reflect, refract;
   };
 
-  static Vector refract(const Vector &, const Vector &, real, real);
-  static Vector reflect(const Vector &, const Vector &);
-  static Fresnel fresnel(const Vector &, const Vector &, real, real);
+  static Vector refract(Vector, Vector, real, real);
+  static Vector reflect(Vector, Vector);
+  static Fresnel fresnel(Vector, Vector, real, real);
 
  public:
-  virtual Vector outgoingLight(Shape *, const TraceRes &, const Vector &,
+  virtual Vector outgoingLight(Shape *, const TraceRes &, Vector,
                                real) const = 0;
 
   virtual const char *name() const;

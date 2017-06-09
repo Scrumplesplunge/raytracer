@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-Sphere::Sphere(const Vector& p, real r)
+Sphere::Sphere(Vector p, real r)
     : position(p), radius(r), squareRadius(r * r) {}
 
 std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
@@ -22,7 +22,7 @@ std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
 
   Vector rel = ray.start - position;
   real b = dot(rel, ray.direction);
-  real det = b * b + squareRadius - rel.squareLength();
+  real det = b * b + squareRadius - dot(rel, rel);
 
   // No intersection if the determinant is negative.
   if (det < 0) return {};
@@ -86,8 +86,9 @@ std::vector<TraceRes> Sphere::trace(const Ray& ray) const {
   return {near, far};
 }
 
-bool Sphere::contains(const Vector& vec) const {
-  return (vec - position).squareLength() < squareRadius;
+bool Sphere::contains(Vector vec) const {
+  Vector offset = vec - position;
+  return dot(offset, offset) < squareRadius;
 }
 
 const char* Sphere::name() const { return "Sphere"; }

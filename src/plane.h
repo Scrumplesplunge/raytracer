@@ -12,10 +12,10 @@ class Plane : public Primitive {
   real offset;
 
  public:
-  Plane(const Vector &, const Vector &);
+  Plane(Vector, Vector);
 
   virtual std::vector<TraceRes> trace(const Ray &) const;
-  virtual bool contains(const Vector &) const;
+  virtual bool contains(Vector) const;
   virtual const char *name() const;
 
   virtual real minX() const;

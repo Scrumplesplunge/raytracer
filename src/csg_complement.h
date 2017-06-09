@@ -15,7 +15,7 @@ class CSGComplement : public CSG {
   CSGComplement(const Shape*);
 
   virtual std::vector<TraceRes> trace(const Ray&) const;
-  virtual bool contains(const Vector&) const;
+  virtual bool contains(Vector) const;
   virtual const char* name() const;
 
   virtual real minX() const;

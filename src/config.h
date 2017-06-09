@@ -1,8 +1,7 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
-//#define USE_SIMD
 //#define USE_DOUBLE
 
 #ifdef USE_DOUBLE

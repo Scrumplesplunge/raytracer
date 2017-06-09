@@ -7,10 +7,10 @@
 
 std::uniform_real_distribution<real> random_real_diffuse(0, 1);
 
-Diffuse::Diffuse(real diff, const Vector& col) : diffuse(diff), color(col) {}
+Diffuse::Diffuse(real diff, Vector col) : diffuse(diff), color(col) {}
 
 Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
-                              const Vector& direction,
+                              Vector direction,
                               real significance) const {
   // Be lazy if significance is low enough.
   if (significance < SIGNIFICANCE) return Vector();
@@ -36,8 +36,7 @@ Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
   Vector light = material.outgoingLight(
       scene, boundaries[0], -vec, significance * mul);
   Vector temp = mul * light;
-
-  return Vector(temp.x * color.x, temp.y * color.y, temp.z * color.z);
+  return temp * color;
 }
 
 const char* Diffuse::name() const { return "Diffuse"; }

@@ -7,5 +7,5 @@ class Ray {
   Vector start, direction;
   unsigned int mask;
 
-  Ray(const Vector&, const Vector&, unsigned int);
+  Ray(Vector, Vector, unsigned int);
 };

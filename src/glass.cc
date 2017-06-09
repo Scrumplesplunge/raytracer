@@ -9,19 +9,19 @@
 
 std::uniform_real_distribution<real> random_real(0, 1);
 
-Glass::Glass(const Vector& col) : color(col) {}
+Glass::Glass(Vector col) : color(col) {}
 
 Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
-                            const Vector& direction, real significance) const {
+                            Vector direction, real significance) const {
   // Be really lazy if the significance is low enough.
-  if (significance < SIGNIFICANCE) return Vector();
+  if (significance < SIGNIFICANCE) return {};
 
   Vector norm = hit.entering ? hit.normal : -hit.normal;
 
   Fresnel children = fresnel(-direction, norm, hit.entering ? 1 : 1.53,
                              hit.entering ? 1.53 : 1);
 
-  real rand = random_real(random_generator);
+  real rand = random_real(RandomGenerator());
   if (rand <= children.weight) {
     // Trace the reflective ray.
     Ray reflectiveRay(hit.position + norm * EPSILON, children.reflect,
@@ -31,8 +31,7 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
       real mul = children.weight;
       Vector temp = res2[0].primitive->material->outgoingLight(
           scene, res2[0], -children.reflect, significance * mul);
-      Vector colorized(temp.x * color.x, temp.y * color.y, temp.z * color.z);
-      return colorized;
+      return temp * color;
     }
   } else {
     // Trace the refractive ray.
@@ -44,16 +43,16 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
       Vector temp = res[0].primitive->material->outgoingLight(
           scene, res[0], -children.refract, significance * mul);
       if (hit.entering) {
-        return Vector(temp.x * pow(color.x, res[0].distance),
-                      temp.y * pow(color.y, res[0].distance),
-                      temp.z * pow(color.z, res[0].distance));
+        return {temp.x * pow(color.x, res[0].distance),
+                temp.y * pow(color.y, res[0].distance),
+                temp.z * pow(color.z, res[0].distance)};
       } else {
         return temp;
       }
     }
   }
 
-  return Vector();
+  return {};
 }
 
 const char* Glass::name() const { return "Glass"; }

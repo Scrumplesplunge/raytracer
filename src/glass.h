@@ -11,10 +11,9 @@ class Glass : public Material {
   Vector color;
 
  public:
-  Glass(const Vector &);
+  Glass(Vector);
 
-  virtual Vector outgoingLight(Shape *, const TraceRes &, const Vector &,
-                               real) const;
+  virtual Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const;
 
   virtual const char *name() const;
 };

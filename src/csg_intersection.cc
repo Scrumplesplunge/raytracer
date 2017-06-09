@@ -68,7 +68,7 @@ std::vector<TraceRes> CSGIntersection::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGIntersection::contains(const Vector& vec) const {
+bool CSGIntersection::contains(Vector vec) const {
   if (contents.size() == 0) return false;
 
   bool out = true;

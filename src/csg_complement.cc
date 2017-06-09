@@ -25,7 +25,7 @@ std::vector<TraceRes> CSGComplement::trace(const Ray& ray) const {
   return boundaries;
 }
 
-bool CSGComplement::contains(const Vector& vec) const {
+bool CSGComplement::contains(Vector vec) const {
   return !contents->contains(vec);
 }
 

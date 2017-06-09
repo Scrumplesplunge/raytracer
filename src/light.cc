@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-Light::Light(const Vector& col) : color(col) {}
+Light::Light(Vector col) : color(col) {}
 
 Vector Light::outgoingLight(Shape* scene, const TraceRes& hit,
-                            const Vector& direction, real significance) const {
+                            Vector direction, real significance) const {
   return color;
 }
 
