@@ -5,7 +5,7 @@
 Sphere::Sphere(Vector p, real r)
     : position(p), radius(r), squareRadius(r * r) {}
 
-std::vector<TraceRes> Sphere::Trace(const Ray& ray) const {
+void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   /*
     A = d . d := 1 because ray.direction is always unit.
 
@@ -25,13 +25,13 @@ std::vector<TraceRes> Sphere::Trace(const Ray& ray) const {
   real det = b * b + squareRadius - dot(rel, rel);
 
   // No intersection if the determinant is negative.
-  if (det < 0) return {};
+  if (det < 0) return;
 
   real sqrtdet = sqrt(det);
   real t1 = -b + sqrtdet;
 
   // No intersection if the latest intersection is behind the ray origin.
-  if (t1 < 0) return {};
+  if (t1 < 0) return;
 
   // Far intersection.
   TraceRes far(this);
@@ -58,7 +58,10 @@ std::vector<TraceRes> Sphere::Trace(const Ray& ray) const {
 
   // Near intersection.
   real t2 = -b - sqrtdet;
-  if (t2 < 0) return {far};
+  if (t2 < 0) {
+    output->push_back(far);
+    return;
+  }
 
   TraceRes near(this);
 
@@ -83,7 +86,8 @@ std::vector<TraceRes> Sphere::Trace(const Ray& ray) const {
   }
 
   // We're done here.
-  return {near, far};
+  output->push_back(near);
+  output->push_back(far);
 }
 
 bool Sphere::Contains(Vector point) const {

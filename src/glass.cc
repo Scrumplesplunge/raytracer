@@ -26,26 +26,28 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
     // Trace the reflective ray.
     Ray reflectiveRay(hit.position + norm * EPSILON, children.reflect,
                       TraceRes::ALL);
-    std::vector<TraceRes> res2 = scene->Trace(reflectiveRay);
-    if (res2.size() > 0) {
+    std::vector<TraceRes> boundaries;
+    scene->Trace(reflectiveRay, &boundaries);
+    if (boundaries.size() > 0) {
       real mul = children.weight;
-      Vector temp = res2[0].primitive->material->outgoingLight(
-          scene, res2[0], -children.reflect, significance * mul);
+      Vector temp = boundaries[0].primitive->material->outgoingLight(
+          scene, boundaries[0], -children.reflect, significance * mul);
       return temp * color;
     }
   } else {
     // Trace the refractive ray.
     Ray refractiveRay(hit.position - norm * EPSILON, children.refract,
                       TraceRes::ALL);
-    std::vector<TraceRes> res = scene->Trace(refractiveRay);
-    if (res.size() > 0) {
+    std::vector<TraceRes> boundaries;
+    scene->Trace(refractiveRay, &boundaries);
+    if (boundaries.size() > 0) {
       real mul = (1 - children.weight);
-      Vector temp = res[0].primitive->material->outgoingLight(
-          scene, res[0], -children.refract, significance * mul);
+      Vector temp = boundaries[0].primitive->material->outgoingLight(
+          scene, boundaries[0], -children.refract, significance * mul);
       if (hit.entering) {
-        return temp * Vector{std::pow(color.x, res[0].distance),
-                             std::pow(color.y, res[0].distance),
-                             std::pow(color.z, res[0].distance)};
+        return temp * Vector{std::pow(color.x, boundaries[0].distance),
+                             std::pow(color.y, boundaries[0].distance),
+                             std::pow(color.z, boundaries[0].distance)};
       } else {
         return temp;
       }

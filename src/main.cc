@@ -45,12 +45,13 @@ Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
 Union room;
 
 Vector raytrace(Shape *scene, Ray ray) {
-  std::vector<TraceRes> res(scene->Trace(ray));
-  if (res.size() == 0) {
+  std::vector<TraceRes> boundaries;
+  scene->Trace(ray, &boundaries);
+  if (boundaries.size() == 0) {
     return {1, 0, 1};
   } else {
-    return res[0].primitive->material->outgoingLight(scene, res[0],
-                                                     -ray.direction, 1);
+    const Material& material = *boundaries[0].primitive->material;
+    return material.outgoingLight(scene, boundaries[0], -ray.direction, 1);
   }
 }
 
@@ -87,7 +88,7 @@ int main() {
   render.brightness = 0;
   render.contrast = 10;
 
-  for (unsigned int i = 0; i < 100; i++) {
+  for (unsigned int i = 0; i < 10; i++) {
     Image canvas(render());
 
     // Save the image.
