@@ -3,6 +3,20 @@
 #include <algorithm>
 #include <iterator>
 
+namespace {
+
+// This stands in for inplace_merge. However, it maintains and reuses a single
+// buffer per thread to avoid performing many allocations.
+template <typename Iterator>
+void Merge(Iterator first, Iterator middle, Iterator last) {
+  thread_local std::vector<typename Iterator::value_type> buffer;
+  buffer.clear();
+  std::merge(first, middle, middle, last, back_inserter(buffer));
+  std::copy(buffer.begin(), buffer.end(), first);
+}
+
+}  // namespace
+
 void Union::Add(const Shape* shape) { contents_.push_back(shape); }
 
 void Union::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
@@ -20,9 +34,8 @@ void Union::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     shape->Trace(ray_copy, output);
 
     // Merge the boundaries.
-    std::inplace_merge(output->begin() + start_index,
-                       output->begin() + middle_index,
-                       output->end());
+    Merge(output->begin() + start_index, output->begin() + middle_index,
+          output->end());
 
     // Compute the initial depth of the overlapping regions.
     bool inside_shape = shape->Contains(ray_copy.start);
@@ -79,9 +92,8 @@ void Intersection::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     }
 
     // Merge the boundaries.
-    std::inplace_merge(output->begin() + start_index,
-                       output->begin() + middle_index,
-                       output->end());
+    Merge(output->begin() + start_index, output->begin() + middle_index,
+          output->end());
 
     // Compute the initial depth of the overlapping regions.
     int depth = inside_intersection + inside_shape;
