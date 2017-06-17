@@ -2,97 +2,84 @@
 
 #include <cmath>
 
-Sphere::Sphere(Vector p, real r)
-    : position(p), squareRadius(r * r) {}
+Sphere::Sphere(Vector position, real radius)
+    : position_(position), square_radius_(radius * radius) {}
 
 void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
-  /*
-    A = d . d := 1 because ray.direction is always unit.
+  // Call:
+  //
+  //     position_      -> p
+  //     square_radius_ -> r^2
+  //     ray.start      -> s
+  //     ray.direction  -> d
+  //
+  // Points on the ray can be described by:
+  //
+  //     x = s + td
+  //
+  // And points on the surface of the sphere can be described by:
+  //
+  //     |x - p| = r
+  //
+  // So intersection points occur when:
+  //
+  //     |s + td - p| = r
+  //  => |(s - p) + td| = r
+  //  => ((s - p) + td)^2 = r^2
+  //  => (s - p)^2 + 2t(d.(s - p)) + t^2(d^2) = r^2
+  //  => (d^2)t^2 + 2d(s - p)t + (s - p)^2 - r^2 = 0
+  //
+  // So we have a quadratic At^2 + Bt + C = 0 with:
+  //
+  //     A = d^2 = dot(ray.direction, ray.direction) = 1
+  //     B = 2d(s - p)
+  //     C = (s - p)^2 - r^2
+  //
+  // The quadratic formula can be simplified slightly with these values.
+  //
+  //     t = (-B +- sqrt(B^2 - 4AC)) / 2A
+  //  => t = (-B +- sqrt(B^2 - 4C)) / 2       (A = 1)
+  //  => t = (-2D +- sqrt(4D^2 - 4C)) / 2     (B = 2D)
+  //  => t = -D +- sqrt(D^2 - C)
+  Vector offset = ray.start - position_;
+  real d = dot(offset, ray.direction);
+  real c = dot(offset, offset) - square_radius_;
 
-    Given this, the quadratic formula simplifies:
-    (-2(o - c) . d +- sqrt(4((o - c) . d)^2 - 4((o - c) . (o - c) - r^2))) / 2
-    -> -(o - c) . d +- sqrt(((o - c) . d)^2 + r^2 - (o - c) . (o - c))
+  // If the determinant would be negative, there will be no roots.
+  if (d * d < c) return;
+  real root_determinant = sqrt(d * d - c);
+  real t1 = -d - root_determinant;
+  real t2 = -d + root_determinant;
 
-    By substituting in v1 = o - c:
-    -> -v1 . d +- sqrt((v1 . d)^2 + r^2 - v1 . v1)
-
-    By substituting in s1 = v1 . d:
-    -> -s1 +- sqrt(s1^2 + r^2 - v1 . v1);
-  */
-
-  Vector rel = ray.start - position;
-  real b = dot(rel, ray.direction);
-  real det = b * b + squareRadius - dot(rel, rel);
-
-  // No intersection if the determinant is negative.
-  if (det < 0) return;
-
-  real sqrtdet = sqrt(det);
-  real t1 = -b + sqrtdet;
-
-  // No intersection if the latest intersection is behind the ray origin.
-  if (t1 < 0) return;
-
-  // Far intersection.
-  TraceRes far(this);
-
-  // Add the distance to the result.
-  far.distance = t1;
-  far.mask |= TraceRes::DISTANCE;
-
-  // Set the entering flag.
-  far.entering = false;
-  far.mask |= TraceRes::ENTERING;
-
-  // Conditionally add the position.  We need this to calculate the normal, so
-  // we might as well add it if we need that.
-  if (ray.mask & (TraceRes::POSITION | TraceRes::NORMAL)) {
-    far.position = ray.start + ray.direction * far.distance;
-    far.mask |= TraceRes::POSITION;
-  }
-
-  if (ray.mask & TraceRes::NORMAL) {
-    far.normal = (far.position - position).normalized();
-    far.mask |= TraceRes::NORMAL;
-  }
-
-  // Near intersection.
-  real t2 = -b - sqrtdet;
-  if (t2 < 0) {
-    output->push_back(far);
-    return;
-  }
-
-  TraceRes near(this);
-
-  // Add the distance to the result.
-  near.distance = t2;
-  near.mask |= TraceRes::DISTANCE;
-
-  // Set the entering flag.
-  near.entering = true;
-  near.mask |= TraceRes::ENTERING;
-
-  // Conditionally add the position.  We need this to calculate the normal, so
-  // we might as well add it if we need that.
-  if (ray.mask & (TraceRes::POSITION | TraceRes::NORMAL)) {
+  if (t1 >= 0) {
+    TraceRes near = {this};
+    near.distance = t1;
+    near.entering = true;
     near.position = ray.start + ray.direction * near.distance;
-    near.mask |= TraceRes::POSITION;
+    near.normal = (near.position - position_).normalized();
+    near.mask = TraceRes::DISTANCE
+              | TraceRes::ENTERING
+              | TraceRes::POSITION
+              | TraceRes::NORMAL;
+    output->push_back(near);
   }
-
-  if (ray.mask & TraceRes::NORMAL) {
-    near.normal = (near.position - position).normalized();
-    near.mask |= TraceRes::NORMAL;
+  if (t2 >= 0) {
+    TraceRes far = {this};
+    far.distance = t2;
+    far.entering = false;
+    far.position = ray.start + ray.direction * far.distance;
+    far.normal = (far.position - position_).normalized();
+    far.mask = TraceRes::DISTANCE
+             | TraceRes::ENTERING
+             | TraceRes::POSITION
+             | TraceRes::NORMAL;
+    output->push_back(far);
   }
-
-  // We're done here.
-  output->push_back(near);
-  output->push_back(far);
 }
 
 bool Sphere::Contains(Vector point) const {
-  Vector offset = point - position;
-  return dot(offset, offset) < squareRadius;
+  Vector offset = point - position_;
+  return dot(offset, offset) < square_radius_;
 }
 
 const char* Sphere::Name() const { return "Sphere"; }
