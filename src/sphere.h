@@ -9,7 +9,7 @@
 class Sphere : public Primitive {
  private:
   Vector position;
-  real radius, squareRadius;
+  real squareRadius;
 
  public:
   Sphere(Vector, real);

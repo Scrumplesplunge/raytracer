@@ -3,7 +3,7 @@
 #include <cmath>
 
 Sphere::Sphere(Vector p, real r)
-    : position(p), radius(r), squareRadius(r * r) {}
+    : position(p), squareRadius(r * r) {}
 
 void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   /*
