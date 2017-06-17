@@ -7,6 +7,10 @@ default: all
 .PHONY: opt
 opt: all
 
+# Build with profiling instrumentation.
+.PHONY: prof
+prof: all
+
 # Build with debug configuration.
 .PHONY: debug
 debug: all
