@@ -17,6 +17,7 @@ RAYTRACER_DEPS =  \
 	light  \
 	material  \
 	matrix  \
+	mirror  \
 	plane  \
 	primitive  \
 	random  \

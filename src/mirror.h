@@ -6,17 +6,15 @@
 #include "trace_res.h"
 #include "vector.h"
 
-class Glass : public Material {
+class Mirror : public Material {
  public:
-  Glass(Vector color);
+  Mirror(Vector color);
 
   Vector outgoingLight(Shape* scene, const TraceRes& hit, Vector direction,
                        real significance) const override;
-  const char *name() const override;
+
+  const char *name() const override { return "Mirror"; }
 
  private:
-  Vector traceColor(Shape* scene, const TraceRes& hit, Vector direction,
-                    real significance, real refractive_index) const;
-
   Vector color_;
 };

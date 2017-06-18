@@ -13,9 +13,13 @@ class TraceRes {
   real distance;
   bool entering;
 
-  static const int PRIMITIVE = 0x00000001, POSITION = 0x00000002,
-                   NORMAL = 0x00000004, DISTANCE = 0x00000008,
-                   ENTERING = 0x00000010, ALL = 0xffffffff;
+  static const unsigned int
+      PRIMITIVE = 0x00000001,
+      POSITION = 0x00000002,
+      NORMAL = 0x00000004,
+      DISTANCE = 0x00000008,
+      ENTERING = 0x00000010,
+      ALL = 0xffffffff;
 
  public:
   TraceRes();
