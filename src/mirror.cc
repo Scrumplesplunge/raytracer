@@ -4,7 +4,7 @@
 
 Mirror::Mirror(Vector color) : color_(color) {}
 
-Vector Mirror::outgoingLight(Shape* scene, const TraceRes& hit,
+Vector Mirror::outgoingLight(const Shape* scene, const TraceRes& hit,
                              Vector direction, real significance) const {
   if (significance < EPSILON) return {};
 

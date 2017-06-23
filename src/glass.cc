@@ -11,7 +11,7 @@ std::uniform_real_distribution<real> random_real(0, 1);
 
 Glass::Glass(Vector color) : color_(color) {}
 
-Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
+Vector Glass::outgoingLight(const Shape* scene, const TraceRes& hit,
                             Vector direction, real significance) const {
   // Be really lazy if the significance is low enough.
   if (significance < SIGNIFICANCE) return {};
@@ -23,7 +23,7 @@ Vector Glass::outgoingLight(Shape* scene, const TraceRes& hit,
          Vector{0, 0, 1} * blue_part;
 }
 
-Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
+Vector Glass::traceColor(const Shape* scene, const TraceRes& hit,
                          Vector direction, real significance,
                          real refractive_index) const {
   Vector norm = hit.entering ? hit.normal : -hit.normal;

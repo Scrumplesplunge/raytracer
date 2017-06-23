@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-Sky::Sky(const char *filename) : Image(filename) {}
+Sky::Sky(const char* filename) : Image(filename) {}
 
-Vector Sky::outgoingLight(Shape* /* scene */, const TraceRes& /* hit */,
+Vector Sky::outgoingLight(const Shape* /* scene */, const TraceRes& /* hit */,
                           Vector direction, real /* significance */) const {
   Vector rayDir = -direction;
 

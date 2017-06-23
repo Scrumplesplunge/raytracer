@@ -5,7 +5,8 @@
 
 class Sky : public Material, public Image {
  public:
-  Sky(const char *);
+  Sky(const char* filename);
 
-  Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
+  Vector outgoingLight(const Shape* scene, const TraceRes& hit,
+                       Vector direction, real significance) const override;
 };

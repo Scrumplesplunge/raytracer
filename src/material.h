@@ -7,7 +7,7 @@
 
 class Material {
  public:
-  virtual Vector outgoingLight(Shape* scene, const TraceRes& hit,
+  virtual Vector outgoingLight(const Shape* scene, const TraceRes& hit,
                                Vector direction, real significance) const = 0;
 
   struct Fresnel {

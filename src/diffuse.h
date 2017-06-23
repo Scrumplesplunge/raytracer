@@ -13,8 +13,8 @@ class Diffuse : public Material {
   // perfectly diffused.
   Diffuse(real diffuse, Vector color);
 
-  Vector outgoingLight(Shape* scene, const TraceRes& hit, Vector direction,
-                       real significance) const override;
+  Vector outgoingLight(const Shape* scene, const TraceRes& hit,
+                       Vector direction, real significance) const override;
 
  private:
   real diffuse_;

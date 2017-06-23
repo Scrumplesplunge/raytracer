@@ -10,11 +10,11 @@ class Glass : public Material {
  public:
   Glass(Vector color);
 
-  Vector outgoingLight(Shape* scene, const TraceRes& hit, Vector direction,
-                       real significance) const override;
+  Vector outgoingLight(const Shape* scene, const TraceRes& hit,
+                       Vector direction, real significance) const override;
 
  private:
-  Vector traceColor(Shape* scene, const TraceRes& hit, Vector direction,
+  Vector traceColor(const Shape* scene, const TraceRes& hit, Vector direction,
                     real significance, real refractive_index) const;
 
   Vector color_;

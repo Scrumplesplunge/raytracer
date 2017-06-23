@@ -10,7 +10,7 @@ std::uniform_real_distribution<real> random_real_diffuse(0, 1);
 Diffuse::Diffuse(real diffuse, Vector color)
     : diffuse_(diffuse), color_(color) {}
 
-Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
+Vector Diffuse::outgoingLight(const Shape* scene, const TraceRes& hit,
                               Vector direction, real significance) const {
   // Be lazy if significance is low enough.
   if (significance < SIGNIFICANCE) return {};
