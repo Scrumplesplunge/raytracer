@@ -5,5 +5,5 @@
 
 class Primitive : public Shape {
  public:
-  Material *material;
+  Material* material;
 };
