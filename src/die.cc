@@ -1,69 +1,88 @@
 #include "die.h"
 
-Die::Die(const Matrix &orientation, Material *material)
-    : sphere(orientation * Vector{0, 0, 0}, SQRT2_2),
-      one0_(orientation * Vector{0, 0, -0.675}, 0.2),
-      two0_(orientation * Vector{0.675, 0.225, -0.225}, 0.2),
-      two1_(orientation * Vector{0.675, -0.225, 0.225}, 0.2),
-      three0_(orientation * Vector{0.225, -0.675, -0.225}, 0.2),
-      three1_(orientation * Vector{0, -0.675, 0}, 0.2),
-      three2_(orientation * Vector{-0.225, -0.675, 0.225}, 0.2),
-      four0_(orientation * Vector{-0.225, 0.675, -0.225}, 0.2),
-      four1_(orientation * Vector{-0.225, 0.675, 0.225}, 0.2),
-      four2_(orientation * Vector{0.225, 0.675, 0.225}, 0.2),
-      four3_(orientation * Vector{0.225, 0.675, -0.225}, 0.2),
-      five0_(orientation * Vector{-0.675, -0.225, -0.225}, 0.2),
-      five1_(orientation * Vector{-0.675, 0.225, -0.225}, 0.2),
-      five2_(orientation * Vector{-0.675, 0.225, 0.225}, 0.2),
-      five3_(orientation * Vector{-0.675, -0.225, 0.225}, 0.2),
-      five4_(orientation * Vector{-0.675, 0, 0}, 0.2),
-      six0_(orientation * Vector{0.225, 0.225, 0.675}, 0.2),
-      six1_(orientation * Vector{0.225, 0, 0.675}, 0.2),
-      six2_(orientation * Vector{0.225, -0.225, 0.675}, 0.2),
-      six3_(orientation * Vector{-0.225, 0.225, 0.675}, 0.2),
-      six4_(orientation * Vector{-0.225, 0, 0.675}, 0.2),
-      six5_(orientation * Vector{-0.225, -0.225, 0.675}, 0.2),
-      plane0(orientation * Vector{0, 0, 0.5}, orientation({0, 0, 1})),
-      plane1(orientation * Vector{0, 0, -0.5}, orientation({0, 0, -1})),
-      plane2(orientation * Vector{0, 0.5, 0}, orientation({0, 1, 0})),
-      plane3(orientation * Vector{0, -0.5, 0}, orientation({0, -1, 0})),
-      plane4(orientation * Vector{0.5, 0, 0}, orientation({1, 0, 0})),
-      plane5(orientation * Vector{-0.5, 0, 0}, orientation({-1, 0, 0})),
-      one0(&one0_),
-      two0(&two0_),
-      two1(&two1_),
-      three0(&three0_),
-      three1(&three1_),
-      three2(&three2_),
-      four0(&four0_),
-      four1(&four1_),
-      four2(&four2_),
-      four3(&four3_),
-      five0(&five0_),
-      five1(&five1_),
-      five2(&five2_),
-      five3(&five3_),
-      five4(&five4_),
-      six0(&six0_),
-      six1(&six1_),
-      six2(&six2_),
-      six3(&six3_),
-      six4(&six4_),
-      six5(&six5_) {
-  Primitive *primitives[] = {
-      &sphere, &one0_,  &two0_,  &two1_,  &three0_, &three1_, &three2_,
-      &four0_, &four1_, &four2_, &four3_, &five0_,  &five1_,  &five2_,
-      &five3_, &five4_, &six0_,  &six1_,  &six2_,   &six3_,   &six4_,
-      &six5_,  &plane0, &plane1, &plane2, &plane3,  &plane4,  &plane5};
-  unsigned int num_primitives = sizeof(primitives) / sizeof(Primitive *);
-  for (unsigned int i = 0; i < num_primitives; i++)
-    primitives[i]->material = material;
+namespace {
 
-  Shape *intersected[] = {&sphere, &plane0, &plane1, &plane2, &plane3, &plane4,
-                          &plane5, &one0,   &two0,   &two1,   &three0, &three1,
-                          &three2, &four0,  &four1,  &four2,  &four3,  &five0,
-                          &five1,  &five2,  &five3,  &five4,  &six0,   &six1,
-                          &six2,   &six3,   &six4,   &six5};
-  unsigned int num_intersected = sizeof(intersected) / sizeof(Shape *);
-  for (unsigned int i = 0; i < num_intersected; i++) Add(intersected[i]);
+struct SphereParameters {
+  Vector position;
+  real radius;
+};
+
+struct PlaneParameters {
+  Vector position;
+  Vector normal;
+};
+
+SphereParameters bounding_sphere{{0, 0, 0}, SQRT2_2};
+PlaneParameters bounding_planes[] = {
+  {{0, 0, 0.5}, {0, 0, 1}},
+  {{0, 0, -0.5}, {0, 0, -1}},
+  {{0, 0.5, 0}, {0, 1, 0}},
+  {{0, -0.5, 0}, {0, -1, 0}},
+  {{0.5, 0, 0}, {1, 0, 0}},
+  {{-0.5, 0, 0}, {-1, 0, 0}},
+};
+SphereParameters dots[] = {
+  {{0, 0, -0.675}, 0.2},
+  {{0.675, 0.225, -0.225}, 0.2},
+  {{0.675, -0.225, 0.225}, 0.2},
+  {{0.225, -0.675, -0.225}, 0.2},
+  {{0, -0.675, 0}, 0.2},
+  {{-0.225, -0.675, 0.225}, 0.2},
+  {{-0.225, 0.675, -0.225}, 0.2},
+  {{-0.225, 0.675, 0.225}, 0.2},
+  {{0.225, 0.675, 0.225}, 0.2},
+  {{0.225, 0.675, -0.225}, 0.2},
+  {{-0.675, -0.225, -0.225}, 0.2},
+  {{-0.675, 0.225, -0.225}, 0.2},
+  {{-0.675, 0.225, 0.225}, 0.2},
+  {{-0.675, -0.225, 0.225}, 0.2},
+  {{-0.675, 0, 0}, 0.2},
+  {{0.225, 0.225, 0.675}, 0.2},
+  {{0.225, 0, 0.675}, 0.2},
+  {{0.225, -0.225, 0.675}, 0.2},
+  {{-0.225, 0.225, 0.675}, 0.2},
+  {{-0.225, 0, 0.675}, 0.2},
+  {{-0.225, -0.225, 0.675}, 0.2},
+};
+
+}  // namespace
+
+Die::Die(const Matrix& transform, Material* material) {
+  bounding_sphere_ =
+      {transform * bounding_sphere.position, bounding_sphere.radius};
+  bounding_sphere_.material = material;
+  Add(&bounding_sphere_);
+  for (int i = 0; i < 6; i++) {
+    bounding_planes_[i] = {transform * bounding_planes[i].position,
+                           transform(bounding_planes[i].normal)};
+    bounding_planes_[i].material = material;
+    Add(&bounding_planes_[i]);
+  }
+  for (int i = 0; i < NUM_DOTS; i++) {
+    dots_[i] = {transform * dots[i].position, dots[i].radius, material};
+    Add(&dots_[i]);
+  }
+}
+
+Die::AntiSphere::AntiSphere() : complement_(&sphere_) {}
+
+Die::AntiSphere::AntiSphere(Vector position, real radius, Material* material)
+    : sphere_(position, radius), complement_(&sphere_) {
+  sphere_.material = material;
+}
+
+Die::AntiSphere& Die::AntiSphere::operator=(const AntiSphere& other) {
+  // Don't copy the complement_; the pointers are already correct so just update
+  // the sphere being pointed to.
+  sphere_ = other.sphere_;
+  return *this;
+}
+
+void Die::AntiSphere::Trace(
+    const Ray& ray, std::vector<TraceRes>* output) const {
+  return complement_.Trace(ray, output);
+}
+
+bool Die::AntiSphere::Contains(Vector point) const {
+  return complement_.Contains(point);
 }
