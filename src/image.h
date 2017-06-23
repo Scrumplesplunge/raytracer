@@ -19,7 +19,7 @@ class Image {
   const char *errorString;
   const char *detailedErrorString;
 
-  unsigned int width, height;
+  int width, height;
   unsigned char *data;
 
   void loadBMP(const char *);
@@ -31,7 +31,7 @@ class Image {
 
  public:
   // Class construction / destruction.
-  Image(unsigned int, unsigned int);
+  Image(int, int);
   Image(const char *);
   Image(const Image &);
   ~Image();
@@ -42,10 +42,10 @@ class Image {
   // Pixel access.
   unsigned int getWidth() const;
   unsigned int getHeight() const;
-  unsigned char *operator()(unsigned int, unsigned int) const;
+  unsigned char *operator()(int, int) const;
 
   // Manipulation.
-  void draw(const Image &, unsigned int, unsigned int);
+  void draw(const Image &, int, int);
 
   // File I/O
   void load(const char *);

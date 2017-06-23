@@ -142,7 +142,7 @@ void Image::loadBMP(const char *filename) {
                  "The file stream was not good after reading the image buffer "
                  "size @(0x22, 4)");
 
-  unsigned int dataSize =
+  int dataSize =
       ((unsigned int)tmp[0]) | (((unsigned int)tmp[1]) << 8) |
       (((unsigned int)tmp[2]) << 16) | (((unsigned int)tmp[3]) << 24);
 
@@ -171,20 +171,20 @@ void Image::loadBMP(const char *filename) {
 
   // The imageBuffer will contain the image top-to-bottom, left-to-right.
   data = new unsigned char[3 * width * height];
-  unsigned int srcRowSize = 4 * ((3 * width + 3) / 4);
-  unsigned int destRowSize = 3 * width;
-  unsigned int srcOffset = 0;
-  unsigned int destOffset = 0;
+  int srcRowSize = 4 * ((3 * width + 3) / 4);
+  int destRowSize = 3 * width;
+  int srcOffset = 0;
+  int destOffset = 0;
 
   if (signedHeight < 0) {
-    for (unsigned int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++) {
       memcpy(data + destOffset, imageTempBuffer + srcOffset, destRowSize);
       srcOffset += srcRowSize;
       destOffset += destRowSize;
     }
   } else {
     srcOffset = height * srcRowSize;
-    for (unsigned int i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++) {
       srcOffset -= srcRowSize;
       memcpy(data + destOffset, imageTempBuffer + srcOffset, destRowSize);
       destOffset += destRowSize;
@@ -309,11 +309,11 @@ bool Image::saveBMP(const char *filename) {
 
   // Write each row to the file.
   // Iterate backwards so that the rows are stored bottom-to-top.
-  unsigned int srcOffset = height * srcRowWidth;
+  int srcOffset = height * srcRowWidth;
   char pad[3] = {
       'L', 'O',
       'L'};  // These are the padding bytes that fill in the end of each row.
-  for (unsigned int i = 0; i < height; i++) {
+  for (int i = 0; i < height; i++) {
     srcOffset -= srcRowWidth;
     file.write((char *)(data + srcOffset), srcRowWidth);
     file.write(pad, destRowWidth - srcRowWidth);
@@ -358,7 +358,7 @@ void Image::clone(const Image &prototype) {
   }
 }
 
-Image::Image(unsigned int w, unsigned int h)
+Image::Image(int w, int h)
     : success(true),
       errorString(NULL),
       detailedErrorString(NULL),
@@ -394,7 +394,7 @@ unsigned int Image::getWidth() const { return width; }
 
 unsigned int Image::getHeight() const { return height; }
 
-unsigned char *Image::operator()(unsigned int x, unsigned int y) const {
+unsigned char *Image::operator()(int x, int y) const {
   if (width <= x || height <= y) {
     throw std::logic_error(
         "Accessing bad index in bitmap: (" + std::to_string(x) + ", " +
@@ -416,14 +416,14 @@ int comp(const char *a, const char *b) {
   return 0;
 }
 
-void Image::draw(const Image &source, unsigned int x, unsigned int y) {
-  unsigned int maxX = x + source.getWidth();
-  unsigned int maxY = y + source.getHeight();
+void Image::draw(const Image &source, int x, int y) {
+  int maxX = x + source.getWidth();
+  int maxY = y + source.getHeight();
   maxX = maxX < width ? maxX : width;
   maxY = maxY < height ? maxY : height;
 
-  for (unsigned int yi = y; yi < maxY; yi++) {
-    for (unsigned int xi = x; xi < maxX; xi++) {
+  for (int yi = y; yi < maxY; yi++) {
+    for (int xi = x; xi < maxX; xi++) {
       unsigned char *dst = operator()(xi, yi);
       unsigned char *src = source(xi - x, yi - y);
       dst[0] = src[0];

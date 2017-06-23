@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-Camera::Camera(unsigned int width, unsigned int height, real field_of_view)
+Camera::Camera(int width, int height, real field_of_view)
     : width_(width), height_(height),
       scale_factor_(std::tan(field_of_view * 0.5) / std::max(width, height)) {}
 
