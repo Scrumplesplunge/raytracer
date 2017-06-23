@@ -25,7 +25,7 @@ Diffuse white(1, {1, 1, 1}), red(1, {1, 0.1, 0}),
     green(1, {0.1, 1, 0});
 Mirror mirror({0.9, 0.9, 0.9});
 Light light({1, 1, 1});
-Sky sky("assets/sky.bmp");
+Sky sky("assets/sky.jpg");
 
 Die die(Transform{}.RotateZ(0.3).Translate({1, -0.6, 0}), &mirror);
 Die die2(Transform{}.RotateZ(-0.3).Translate({-0.5, 0.6, 0}), &glass);
@@ -99,7 +99,7 @@ int main() {
   room.Add(&box_wall_far);
   room.Add(&box_wall_behind);
 
-  Camera cam(384, 216, 0.4);
+  Camera cam(3840, 2160, 0.4);
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
 
