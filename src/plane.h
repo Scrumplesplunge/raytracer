@@ -7,13 +7,16 @@
 #include <vector>
 
 class Plane : public Primitive {
- private:
-  Vector normal;
-  real offset;
-
  public:
-  Plane(Vector, Vector);
+  Plane() = default;
+
+  // The normal should be of unit length.
+  Plane(Vector position, Vector normal);
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;
+
+ private:
+  Vector normal_ = {1, 0, 0};
+  real offset_ = 0;
 };
