@@ -6,10 +6,10 @@
 
 #ifdef USE_DOUBLE
 typedef double real;
-const real EPSILON = 0.00001;
+const real EPSILON = 0.0000001;
 #else
 typedef float real;
-const real EPSILON = 0.001;
+const real EPSILON = 0.0001;
 #endif
 
 const real SIGNIFICANCE = 0.01;
