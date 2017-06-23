@@ -1,6 +1,6 @@
 #include "material.h"
 
-Vector Material::refract(Vector vector, Vector normal,
+Vector Material::Refract(Vector vector, Vector normal,
                          real refractive_index_1, real refractive_index_2) {
   // TODO: This is an approximation. Sub-in a proper solution.
   Vector direction =
@@ -8,16 +8,16 @@ Vector Material::refract(Vector vector, Vector normal,
   return direction.normalized();
 }
 
-Vector Material::reflect(Vector vector, Vector normal) {
+Vector Material::Reflect(Vector vector, Vector normal) {
   return vector - 2 * dot(normal, vector) * normal;
 }
 
-Material::Fresnel Material::fresnel(Vector vector, Vector normal,
-                                    real refractive_index_1,
-                                    real refractive_index_2) {
+Material::Fresnel Material::ComputeFresnel(
+    Vector vector, Vector normal, real refractive_index_1,
+    real refractive_index_2) {
   Fresnel out;
-  out.refract = refract(vector, normal, refractive_index_1, refractive_index_2);
-  out.reflect = reflect(vector, normal);
+  out.refract = Refract(vector, normal, refractive_index_1, refractive_index_2);
+  out.reflect = Reflect(vector, normal);
 
   real cosI = -dot(normal, vector);
   real cosT = -dot(normal, out.refract);

@@ -58,14 +58,14 @@ class Scene : public Union {
 };
 Scene room;
 
-Vector raytrace(const Shape* scene, Ray ray) {
+Vector Raytrace(const Shape* scene, Ray ray) {
   std::vector<TraceRes> boundaries;
   scene->Trace(ray, &boundaries);
   if (boundaries.size() == 0) {
     return {1, 0, 1};
   } else {
     const Material& material = *boundaries[0].primitive->material;
-    return material.outgoingLight(scene, boundaries[0], -ray.direction, 1);
+    return material.OutgoingLight(scene, boundaries[0], -ray.direction, 1);
   }
 }
 
@@ -94,16 +94,17 @@ int main() {
   room.Add(&box_wall_far);
   room.Add(&box_wall_behind);
 
-  Camera cam(1920, 1080, 0.4);
+  Camera cam(640, 480, 0.4);
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
 
   RenderOptions options;
+  options.sub_pixels = 1;
   options.contrast = 20;
 
-  Render render(raytrace, &room, cam, options);
+  Render render(Raytrace, &room, cam, options);
 
-  for (unsigned int i = 0; i < 1; i++) {
+  for (unsigned int i = 0; i < 100; i++) {
     Image canvas(render());
 
     // Save the image.
