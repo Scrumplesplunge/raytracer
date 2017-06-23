@@ -32,13 +32,13 @@ Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
       hit.entering ? refractive_index : real{1});
 
   real rand = random_real(RandomGenerator());
-  if (rand <= children.weight) {
+  if (rand <= children.fraction_reflected) {
     // Trace the reflective ray.
     Ray reflectiveRay{hit.position + norm * EPSILON, children.reflect};
     std::vector<TraceRes> boundaries;
     scene->Trace(reflectiveRay, &boundaries);
     if (boundaries.size() > 0) {
-      real mul = children.weight;
+      real mul = children.fraction_reflected;
       Vector temp = boundaries[0].primitive->material->outgoingLight(
           scene, boundaries[0], -children.reflect, significance * mul);
       return temp * color_;
@@ -49,7 +49,7 @@ Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
     std::vector<TraceRes> boundaries;
     scene->Trace(refractiveRay, &boundaries);
     if (boundaries.size() > 0) {
-      real mul = (1 - children.weight);
+      real mul = (1 - children.fraction_reflected);
       Vector temp = boundaries[0].primitive->material->outgoingLight(
           scene, boundaries[0], -children.refract, significance * mul);
       if (hit.entering) {

@@ -1,34 +1,33 @@
 #include "material.h"
 
-Vector Material::refract(Vector vec, Vector norm,
-                         real refractiveIndex1, real refractiveIndex2) {
-  // This is an approximation.  We can sub-in a proper solution at a later date.
-  real mul = refractiveIndex1 - refractiveIndex2;
-  return vec + norm * mul;
+Vector Material::refract(Vector vector, Vector normal,
+                         real refractive_index_1, real refractive_index_2) {
+  // TODO: This is an approximation. Sub-in a proper solution.
+  Vector direction =
+      vector + normal * (refractive_index_1 - refractive_index_2);
+  return direction.normalized();
 }
 
-Vector Material::reflect(Vector vec, Vector norm) {
-  return vec - norm * (2 * dot(norm, vec));
+Vector Material::reflect(Vector vector, Vector normal) {
+  return vector - 2 * dot(normal, vector) * normal;
 }
 
-Material::Fresnel Material::fresnel(Vector vec, Vector norm,
-                                    real refractiveIndex1,
-                                    real refractiveIndex2) {
+Material::Fresnel Material::fresnel(Vector vector, Vector normal,
+                                    real refractive_index_1,
+                                    real refractive_index_2) {
   Fresnel out;
-  out.refract =
-      refract(vec, norm, refractiveIndex1, refractiveIndex2).normalized();
-  out.reflect = reflect(vec, norm);
+  out.refract = refract(vector, normal, refractive_index_1, refractive_index_2);
+  out.reflect = reflect(vector, normal);
 
-  real cosI = -dot(norm, vec);
-  real cosT = -dot(norm, out.refract);
-  real sPolarReflect = (refractiveIndex1 * cosI - refractiveIndex2 * cosT) /
-                       (refractiveIndex1 * cosI + refractiveIndex2 * cosT);
+  real cosI = -dot(normal, vector);
+  real cosT = -dot(normal, out.refract);
+  real sPolarReflect = (refractive_index_1 * cosI - refractive_index_2 * cosT) /
+                       (refractive_index_1 * cosI + refractive_index_2 * cosT);
   sPolarReflect *= sPolarReflect;
-  real pPolarReflect = (refractiveIndex1 * cosT - refractiveIndex2 * cosI) /
-                       (refractiveIndex1 * cosT + refractiveIndex2 * cosI);
+  real pPolarReflect = (refractive_index_1 * cosT - refractive_index_2 * cosI) /
+                       (refractive_index_1 * cosT + refractive_index_2 * cosI);
   pPolarReflect *= pPolarReflect;
-  out.weight = (sPolarReflect + pPolarReflect) / 2;
-  if (out.weight > 1) out.weight = 1;
-
+  out.fraction_reflected =
+      std::min(real{1}, (sPolarReflect + pPolarReflect) / 2);
   return out;
 }

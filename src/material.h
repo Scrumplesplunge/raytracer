@@ -6,17 +6,18 @@
 #include "vector.h"
 
 class Material {
- protected:
+ public:
+  virtual Vector outgoingLight(Shape* scene, const TraceRes& hit,
+                               Vector direction, real significance) const = 0;
+
   struct Fresnel {
-    real weight;
+    real fraction_reflected;
     Vector reflect, refract;
   };
 
-  static Vector refract(Vector, Vector, real, real);
-  static Vector reflect(Vector, Vector);
-  static Fresnel fresnel(Vector, Vector, real, real);
-
- public:
-  virtual Vector outgoingLight(Shape *, const TraceRes &, Vector,
-                               real) const = 0;
+  static Vector refract(Vector vector, Vector normal, real refractive_index_1,
+                        real refractive_index_2);
+  static Vector reflect(Vector vector, Vector normal);
+  static Fresnel fresnel(Vector vector, Vector normal, real refractive_index_1,
+                         real refractive_index_2);
 };
