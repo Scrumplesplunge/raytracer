@@ -5,102 +5,97 @@
 #include <algorithm>
 #include <vector>
 
+namespace {
+
 std::uniform_real_distribution<real> real_rand(0, 1);
 
-Render::Render(Vector (*renderPixelFunc)(Shape *, Ray), Shape *s, Camera c)
-    : renderPixel(renderPixelFunc),
-      currentChunk(0),
-      numChunks(0),
-      numPasses(0),
-      buffer(new Vector[c.width() * c.height()]),
-      output(c.width(), c.height()),
-      cam(c),
-      shape(s),
-      subPixels(1),
-      numThreads(1),
-      chunkWidth(64),
-      chunkHeight(64),
-      brightness(0),
-      contrast(1) {}
+int DivideAndCeil(int x, int y) { return (x + y - 1) / y; }
 
-Render::~Render() { delete[] buffer; }
+}  // namespace
+
+Render::Render(RenderPixelFunction* render_pixel, const Shape* scene,
+               Camera camera, RenderOptions options)
+    : render_pixel_(render_pixel),
+      scene_(scene),
+      camera_(camera),
+      options_(options),
+      num_chunks_(DivideAndCeil(camera_.width(), options_.chunk_width) *
+                  DivideAndCeil(camera_.height(), options_.chunk_height)),
+      output_(camera_.width(), camera_.height()),
+      pixel_colors_(
+          std::make_unique<Vector[]>(camera_.width() * camera_.height())) {}
 
 Image Render::operator()() {
-  numChunks = ((cam.width() + chunkWidth - 1) / chunkWidth) *
-              ((cam.height() + chunkHeight - 1) / chunkHeight);
-  currentChunk = 0;
-  numPasses++;
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    next_chunk_ = 0;
+    num_passes_++;
+  }
 
   std::vector<std::thread> threads;
-  for (unsigned int i = 0; i < numThreads; i++)
+  for (int i = 0; i < options_.num_threads; i++)
     threads.push_back(std::thread(&Render::RenderChunk, this));
   for (auto& thread : threads) thread.join();
 
-  return output;
+  return output_;
 }
 
-void Render::RenderChunk(Render *parent) {
+void Render::RenderChunk() {
+  int chunks_per_row = DivideAndCeil(camera_.width(), options_.chunk_width);
   while (1) {
-    parent->mtx.lock();
-    // All chunks are taken.  Exit.
-    if (parent->currentChunk == parent->numChunks) {
-      parent->mtx.unlock();
-      return;
+    int chunk;
+    {
+      std::unique_lock<std::mutex> lock(mutex_);
+      if (next_chunk_ == num_chunks_) return;  // All chunks are rendered.
+      chunk = next_chunk_;
+      next_chunk_++;
     }
-    unsigned int chunk = parent->currentChunk;
-    parent->currentChunk++;
-    parent->mtx.unlock();
 
     // Calculate the chunk coordinates.
-    unsigned int chunksPerRow =
-        (parent->cam.width() + parent->chunkWidth - 1) / parent->chunkWidth;
-    unsigned int x = parent->chunkWidth * (chunk % chunksPerRow);
-    unsigned int y = parent->chunkHeight * (chunk / chunksPerRow);
-    unsigned int x2 = std::min(x + parent->chunkWidth, parent->cam.width());
-    unsigned int y2 = std::min(y + parent->chunkHeight, parent->cam.height());
+    int chunk_x = options_.chunk_width * (chunk % chunks_per_row);
+    int chunk_y = options_.chunk_height * (chunk / chunks_per_row);
+    int w = std::min(camera_.width() - chunk_x, options_.chunk_width);
+    int h = std::min(camera_.height() - chunk_y, options_.chunk_height);
 
-    Image output(x2 - x, y2 - y);
-
-    for (unsigned int yi = y; yi < y2; yi++) {
-      for (unsigned int xi = x; xi < x2; xi++) {
+    // Render the samples.
+    auto chunk_pixel_colors_ = std::make_unique<Vector[]>(w * h);
+    for (int y = 0; y < h; y++) {
+      for (int x = 0; x < w; x++) {
         Vector color;
 
-        // Supersampling.
-        if (parent->subPixels == 0) {
-          color = parent->renderPixel(
-              parent->shape,
-              parent->cam.GetRay(xi + 0.5, yi + 0.5));
-        } else {
-          for (unsigned int i = 0, im = parent->subPixels; i < im; i++) {
-            // Create a ray and trace it.
-            Ray ray = parent->cam.GetRay(xi + real_rand(RandomGenerator()),
-                                         yi + real_rand(RandomGenerator()));
-            color = color + parent->renderPixel(parent->shape, ray);
-          }
-
-          // Take the average of all samples.
-          color = color / parent->subPixels;
+        for (int i = 0, n = options_.sub_pixels; i < n; i++) {
+          // Create a ray and trace it.
+          Ray ray = camera_.GetRay(chunk_x + x + real_rand(RandomGenerator()),
+                                   chunk_y + y + real_rand(RandomGenerator()));
+          color = color + render_pixel_(scene_, ray);
         }
 
-        Vector *ptr = parent->buffer + parent->cam.width() * yi + xi;
+        // Take the average of all samples.
+        color = color / options_.sub_pixels;
 
-        // Store the sum of all colours; used for calculating fine average over
-        // time.
-        ptr[0] = ptr[0] + color;
-
-        // Output the current average to the pixel.
-        color = 256 * (parent->contrast * (ptr[0] / parent->numPasses) +
-                       parent->brightness);
-        unsigned char *pix = output(xi - x, yi - y);
-        pix[2] =
-            (unsigned char)(color.x >= 256 ? 255 : (color.x < 0 ? 0 : color.x));
-        pix[1] =
-            (unsigned char)(color.y >= 256 ? 255 : (color.y < 0 ? 0 : color.y));
-        pix[0] =
-            (unsigned char)(color.z >= 256 ? 255 : (color.z < 0 ? 0 : color.z));
+        Vector& pixel = chunk_pixel_colors_[y * w + x];
+        pixel = pixel + color;
       }
     }
 
-    parent->output.draw(output, x, y);
+    // Copy the results back into the master image.
+    std::unique_lock<std::mutex> lock(mutex_);
+    for (int y = 0; y < h; y++) {
+      for (int x = 0; x < w; x++) {
+        // Augment the overall sum for this pixel.
+        Vector color = chunk_pixel_colors_[y * w + x];
+        Vector& pixel = pixel_colors_[
+            camera_.width() * (chunk_y + y) + (chunk_x + x)];
+        pixel = pixel + color;
+        // Compute the value for the bitmap.
+        color = pixel / num_passes_;
+        Vector bitmap_color =
+            256 * (options_.contrast * color + options_.brightness);
+        auto* bitmap_pixel = output_(chunk_x + x, chunk_y + y);
+        bitmap_pixel[2] = std::clamp(bitmap_color.x, real{0}, real{255});
+        bitmap_pixel[1] = std::clamp(bitmap_color.y, real{0}, real{255});
+        bitmap_pixel[0] = std::clamp(bitmap_color.z, real{0}, real{255});
+      }
+    }
   }
 }

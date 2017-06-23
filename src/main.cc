@@ -58,7 +58,7 @@ class Scene : public Union {
 };
 Scene room;
 
-Vector raytrace(Shape *scene, Ray ray) {
+Vector raytrace(const Shape* scene, Ray ray) {
   std::vector<TraceRes> boundaries;
   scene->Trace(ray, &boundaries);
   if (boundaries.size() == 0) {
@@ -98,11 +98,10 @@ int main() {
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
 
-  Render render(raytrace, &room, cam);
-  render.numThreads = std::thread::hardware_concurrency();
-  render.subPixels = 1;
-  render.brightness = 0;
-  render.contrast = 20;
+  RenderOptions options;
+  options.contrast = 20;
+
+  Render render(raytrace, &room, cam, options);
 
   for (unsigned int i = 0; i < 1; i++) {
     Image canvas(render());
