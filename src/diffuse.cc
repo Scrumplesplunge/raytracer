@@ -7,35 +7,30 @@
 
 std::uniform_real_distribution<real> random_real_diffuse(0, 1);
 
-Diffuse::Diffuse(real diff, Vector col) : diffuse(diff), color(col) {}
+Diffuse::Diffuse(real diffuse, Vector color)
+    : diffuse_(diffuse), color_(color) {}
 
 Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
-                              Vector direction,
-                              real significance) const {
+                              Vector direction, real significance) const {
   // Be lazy if significance is low enough.
-  if (significance < SIGNIFICANCE) return Vector();
+  if (significance < SIGNIFICANCE) return {};
 
   // Generate a random ray.
-  Vector norm = hit.entering ? hit.normal : -hit.normal;
-  Vector ref = reflect(-direction, norm);
-  Vector rnd = Vector::random().normalized();
-  Vector vec = (rnd + (1 - EPSILON - diffuse) * ref).normalized();
+  Vector normal = hit.entering ? hit.normal : -hit.normal;
+  Vector random = Vector::random().normalized();
+  if (dot(random, normal) < 0) random = -random;
+  Vector reflected = reflect(-direction, normal);
+  Vector vector = (random * diffuse_ + reflected * (1 - diffuse_)).normalized();
 
-  real mul = dot(vec, hit.normal);
-  if (mul < 0) {
-    vec = -vec;
-    mul = -mul;
-  }
-
-  Ray randomRay{hit.position + norm * EPSILON, vec};
+  Ray randomRay{hit.position + normal * EPSILON, vector};
   std::vector<TraceRes> boundaries;
   scene->Trace(randomRay, &boundaries);
 
   if (boundaries.size() == 0) return {};
 
   const Material& material = *boundaries[0].primitive->material;
+  real light_significance = dot(vector, normal);
   Vector light = material.outgoingLight(
-      scene, boundaries[0], -vec, significance * mul);
-  Vector temp = mul * light;
-  return temp * color;
+      scene, boundaries[0], -vector, significance * light_significance);
+  return light_significance * light * color_;
 }

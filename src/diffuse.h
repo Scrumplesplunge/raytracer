@@ -7,12 +7,16 @@
 #include "vector.h"
 
 class Diffuse : public Material {
- private:
-  real diffuse;
-  Vector color;
-
  public:
-  Diffuse(real, Vector);
+  // The diffuse factor should be in the range [0-1]. When the factor is 0, the
+  // surface is perfectly reflective. When the factor is 1, the surface is
+  // perfectly diffused.
+  Diffuse(real diffuse, Vector color);
 
-  Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
+  Vector outgoingLight(Shape* scene, const TraceRes& hit, Vector direction,
+                       real significance) const override;
+
+ private:
+  real diffuse_;
+  Vector color_;
 };
