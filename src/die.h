@@ -2,13 +2,13 @@
 
 #include "csg.h"
 #include "material.h"
-#include "matrix.h"
 #include "plane.h"
 #include "sphere.h"
+#include "transform.h"
 
 class Die : public Intersection {
  public:
-  Die(const Matrix& transform, Material* material);
+  Die(const Transform& transform, Material* material);
 
  private:
   class AntiSphere : public Shape {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "config.h"
-#include "matrix.h"
 #include "ray.h"
+#include "transform.h"
 
 class Camera {
  public:
@@ -17,7 +17,7 @@ class Camera {
   int height() const { return height_; }
 
  private:
-  Matrix transform_;
+  Transform transform_;
   int width_, height_;
   real scale_factor_;
 };

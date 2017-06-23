@@ -5,7 +5,6 @@
 #include "glass.h"
 #include "image.h"
 #include "light.h"
-#include "matrix.h"
 #include "mirror.h"
 #include "plane.h"
 #include "ray.h"
@@ -13,6 +12,7 @@
 #include "sky.h"
 #include "sphere.h"
 #include "trace_res.h"
+#include "transform.h"
 #include "vector.h"
 
 #include <atomic>
@@ -27,16 +27,8 @@ Mirror mirror({0.9, 0.9, 0.9});
 Light light({1, 1, 1});
 Sky sky("assets/sky.bmp");
 
-Die die(Matrix{{0.9511, 0.3090, 0},
-               {-0.3090, 0.9511, 0},
-               {0, 0, 1},
-               {1, -0.6, 0}},
-        &mirror);
-Die die2(Matrix{{0.9511, -0.3090, 0},
-                {0.3090, 0.9511, 0},
-                {0, 0, 1},
-                {-0.5, 0.6, 0}},
-         &glass);
+Die die(Transform{}.RotateZ(0.3).Translate({1, -0.6, 0}), &mirror);
+Die die2(Transform{}.RotateZ(-0.3).Translate({-0.5, 0.6, 0}), &glass);
 
 Sphere source_far({2, 0, 2}, 0.5);
 Sphere source_left({0, -2, 2}, 0.5);
@@ -107,7 +99,7 @@ int main() {
   room.Add(&box_wall_far);
   room.Add(&box_wall_behind);
 
-  Camera cam(3840, 2160, 0.4);
+  Camera cam(384, 216, 0.4);
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
 

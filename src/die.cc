@@ -47,7 +47,7 @@ SphereParameters dots[] = {
 
 }  // namespace
 
-Die::Die(const Matrix& transform, Material* material) {
+Die::Die(const Transform& transform, Material* material) {
   bounding_sphere_ =
       {transform * bounding_sphere.position, bounding_sphere.radius};
   bounding_sphere_.material = material;

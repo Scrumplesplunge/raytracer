@@ -16,7 +16,6 @@ RAYTRACER_DEPS =  \
 	image  \
 	light  \
 	material  \
-	matrix  \
 	mirror  \
 	plane  \
 	primitive  \
@@ -27,6 +26,7 @@ RAYTRACER_DEPS =  \
 	sky  \
 	sphere  \
 	trace_res  \
+	transform  \
 	vector  \
 	main
 bin/raytracer: $(patsubst %, obj/%.o, ${RAYTRACER_DEPS})
