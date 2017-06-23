@@ -24,7 +24,7 @@ class Render {
   std::mutex mtx;
 
  public:
-  unsigned int subPixels, numThreads, chunkWidth, chunkHeight, baseMask;
+  unsigned int subPixels, numThreads, chunkWidth, chunkHeight;
   real brightness, contrast;
 
  public:

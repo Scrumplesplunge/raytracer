@@ -27,7 +27,7 @@ Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
     mul = -mul;
   }
 
-  Ray randomRay(hit.position + norm * EPSILON, vec, TraceRes::ALL);
+  Ray randomRay{hit.position + norm * EPSILON, vec};
   std::vector<TraceRes> boundaries;
   scene->Trace(randomRay, &boundaries);
 

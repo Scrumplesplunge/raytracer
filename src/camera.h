@@ -11,7 +11,7 @@ class Camera {
   void MoveTo(Vector position);
   void LookAt(Vector position);
 
-  Ray GetRay(real x, real y, unsigned int mask);
+  Ray GetRay(real x, real y);
 
   unsigned int width() const { return width_; }
   unsigned int height() const { return height_; }

@@ -22,25 +22,10 @@ void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   // We have found the intersection! Hoorah!
   TraceRes hit(this);
 
-  // Add the distance to the result.
   hit.distance = t;
-  hit.mask |= TraceRes::DISTANCE;
-
-  // Set the entering flag.
   hit.entering = a < 0;
-  hit.mask |= TraceRes::ENTERING;
-
-  // Conditionally add the position.
-  if (ray.mask & TraceRes::POSITION) {
-    hit.position = ray.start + ray.direction * hit.distance;
-    hit.mask |= TraceRes::POSITION;
-  }
-
-  // Conditionally add the normal.
-  if (ray.mask & TraceRes::NORMAL) {
-    hit.normal = normal;
-    hit.mask |= TraceRes::NORMAL;
-  }
+  hit.position = ray.start + ray.direction * hit.distance;
+  hit.normal = normal;
 
   output->push_back(hit);
 }

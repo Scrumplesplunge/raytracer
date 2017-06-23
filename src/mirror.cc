@@ -11,8 +11,7 @@ Vector Mirror::outgoingLight(Shape* scene, const TraceRes& hit,
   // Take the colour of the reflected ray.
   Vector normal = hit.entering ? hit.normal : -hit.normal;
   Vector reflected_direction = reflect(-direction, normal);
-  Ray reflected_ray{
-      hit.position + normal * EPSILON, reflected_direction, TraceRes::ALL};
+  Ray reflected_ray{hit.position + normal * EPSILON, reflected_direction};
   std::vector<TraceRes> boundaries;
   scene->Trace(reflected_ray, &boundaries);
   

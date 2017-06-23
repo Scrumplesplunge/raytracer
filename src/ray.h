@@ -2,10 +2,7 @@
 
 #include "vector.h"
 
-class Ray {
- public:
+struct Ray {
+  // Direction must be normalized.
   Vector start, direction;
-  unsigned int mask;
-
-  Ray(Vector, Vector, unsigned int);
 };

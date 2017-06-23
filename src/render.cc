@@ -20,8 +20,6 @@ Render::Render(Vector (*renderPixelFunc)(Shape *, Ray), Shape *s, Camera c)
       numThreads(1),
       chunkWidth(64),
       chunkHeight(64),
-      baseMask(TraceRes::DISTANCE | TraceRes::ENTERING | TraceRes::NORMAL |
-               TraceRes::POSITION),
       brightness(0),
       contrast(1) {}
 
@@ -71,13 +69,12 @@ void Render::RenderChunk(Render *parent) {
         if (parent->subPixels == 0) {
           color = parent->renderPixel(
               parent->shape,
-              parent->cam.GetRay(xi + 0.5, yi + 0.5, parent->baseMask));
+              parent->cam.GetRay(xi + 0.5, yi + 0.5));
         } else {
           for (unsigned int i = 0, im = parent->subPixels; i < im; i++) {
             // Create a ray and trace it.
-            Ray ray(parent->cam.GetRay(xi + real_rand(RandomGenerator()),
-                                       yi + real_rand(RandomGenerator()),
-                                       parent->baseMask));
+            Ray ray = parent->cam.GetRay(xi + real_rand(RandomGenerator()),
+                                         yi + real_rand(RandomGenerator()));
             color = color + parent->renderPixel(parent->shape, ray);
           }
 

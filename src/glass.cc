@@ -34,8 +34,7 @@ Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
   real rand = random_real(RandomGenerator());
   if (rand <= children.weight) {
     // Trace the reflective ray.
-    Ray reflectiveRay(hit.position + norm * EPSILON, children.reflect,
-                      TraceRes::ALL);
+    Ray reflectiveRay{hit.position + norm * EPSILON, children.reflect};
     std::vector<TraceRes> boundaries;
     scene->Trace(reflectiveRay, &boundaries);
     if (boundaries.size() > 0) {
@@ -46,8 +45,7 @@ Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
     }
   } else {
     // Trace the refractive ray.
-    Ray refractiveRay(hit.position - norm * EPSILON, children.refract,
-                      TraceRes::ALL);
+    Ray refractiveRay{hit.position - norm * EPSILON, children.refract};
     std::vector<TraceRes> boundaries;
     scene->Trace(refractiveRay, &boundaries);
     if (boundaries.size() > 0) {

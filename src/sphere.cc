@@ -57,10 +57,6 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     near.entering = true;
     near.position = ray.start + ray.direction * near.distance;
     near.normal = (near.position - position_).normalized();
-    near.mask = TraceRes::DISTANCE
-              | TraceRes::ENTERING
-              | TraceRes::POSITION
-              | TraceRes::NORMAL;
     output->push_back(near);
   }
   if (t2 >= 0) {
@@ -69,10 +65,6 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     far.entering = false;
     far.position = ray.start + ray.direction * far.distance;
     far.normal = (far.position - position_).normalized();
-    far.mask = TraceRes::DISTANCE
-             | TraceRes::ENTERING
-             | TraceRes::POSITION
-             | TraceRes::NORMAL;
     output->push_back(far);
   }
 }

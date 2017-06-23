@@ -22,23 +22,19 @@ void Union::Add(const Shape* shape) { contents_.push_back(shape); }
 void Union::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   const size_t start_index = output->size();
 
-  // CSG requires additional features, if they are not already enabled.
-  Ray ray_copy = ray;
-  ray_copy.mask |= TraceRes::DISTANCE | TraceRes::ENTERING;
-
   bool inside_union = false;
   for (const Shape* shape : contents_) {
     const size_t middle_index = output->size();
 
     // Trace the boundaries of the underlying shape.
-    shape->Trace(ray_copy, output);
+    shape->Trace(ray, output);
 
     // Merge the boundaries.
     Merge(output->begin() + start_index, output->begin() + middle_index,
           output->end());
 
     // Compute the initial depth of the overlapping regions.
-    bool inside_shape = shape->Contains(ray_copy.start);
+    bool inside_shape = shape->Contains(ray.start);
     int depth = inside_union + inside_shape;
 
     // Compute the union from the merged boundaries.
@@ -69,18 +65,14 @@ void Intersection::Add(const Shape* shape) { contents_.push_back(shape); }
 void Intersection::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   const size_t start_index = output->size();
 
-  // CSG requires additional features, if they are not already enabled.
-  Ray ray_copy = ray;
-  ray_copy.mask |= TraceRes::DISTANCE | TraceRes::ENTERING;
-
   std::vector<TraceRes> boundaries;
   bool inside_intersection = true;
   for (const Shape* shape : contents_) {
     const size_t middle_index = output->size();
 
     // Trace the boundaries of the underlying shape.
-    shape->Trace(ray_copy, output);
-    bool inside_shape = shape->Contains(ray_copy.start);
+    shape->Trace(ray, output);
+    bool inside_shape = shape->Contains(ray.start);
 
     if (output->size() == middle_index && !inside_shape) {
       // If the ray was entirely outside the shape, the whole intersection is
@@ -123,12 +115,8 @@ Complement::Complement(const Shape* shape)
     : shape_(shape) {}
 
 void Complement::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
-  // CSG requires additional features, if they are not already enabled.
-  Ray ray_copy = ray;
-  ray_copy.mask |= TraceRes::DISTANCE | TraceRes::ENTERING;
-
   const size_t start_index = output->size();
-  shape_->Trace(ray_copy, output);
+  shape_->Trace(ray, output);
 
   auto flip_boundary = [&](TraceRes& boundary) {
     boundary.entering = !boundary.entering;

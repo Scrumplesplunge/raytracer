@@ -3,10 +3,7 @@
 
 #include <iostream>
 
-TraceRes::TraceRes() : mask(0) {}
-
-TraceRes::TraceRes(const Primitive *prim)
-    : mask(TraceRes::PRIMITIVE), primitive(prim) {}
+TraceRes::TraceRes(const Primitive* primitive) : primitive(primitive) {}
 
 bool operator<(const TraceRes& left, const TraceRes& right) {
   return left.distance < right.distance;

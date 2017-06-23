@@ -99,12 +99,12 @@ int main() {
   cam.LookAt({0.75, -0.2, 0});
 
   Render render(raytrace, &room, cam);
-  render.numThreads = 8;
-  render.subPixels = 10;
+  render.numThreads = std::thread::hardware_concurrency();
+  render.subPixels = 1;
   render.brightness = 0;
   render.contrast = 20;
 
-  for (unsigned int i = 0; i < 1000; i++) {
+  for (unsigned int i = 0; i < 1; i++) {
     Image canvas(render());
 
     // Save the image.
