@@ -64,8 +64,6 @@ bool Union::Contains(Vector point) const {
   return std::any_of(contents_.begin(), contents_.end(), contains_point);
 }
 
-const char* Union::Name() const { return "Union"; }
-
 void Intersection::Add(const Shape* shape) { contents_.push_back(shape); }
 
 void Intersection::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
@@ -121,8 +119,6 @@ bool Intersection::Contains(Vector point) const {
   return std::all_of(contents_.begin(), contents_.end(), contains_point);
 }
 
-const char* Intersection::Name() const { return "Intersection"; }
-
 Complement::Complement(const Shape* shape)
     : shape_(shape) {}
 
@@ -144,5 +140,3 @@ void Complement::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
 bool Complement::Contains(Vector point) const {
   return !shape_->Contains(point);
 }
-
-const char* Complement::Name() const { return "Complement"; }

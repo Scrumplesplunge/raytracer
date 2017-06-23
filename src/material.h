@@ -19,6 +19,4 @@ class Material {
  public:
   virtual Vector outgoingLight(Shape *, const TraceRes &, Vector,
                                real) const = 0;
-
-  virtual const char *name() const;
 };

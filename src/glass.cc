@@ -66,5 +66,3 @@ Vector Glass::traceColor(Shape* scene, const TraceRes& hit,
 
   return {};
 }
-
-const char* Glass::name() const { return "Glass"; }

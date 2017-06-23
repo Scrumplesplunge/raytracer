@@ -10,5 +10,4 @@ class Shape {
  public:
   virtual void Trace(const Ray& ray, std::vector<TraceRes>* output) const = 0;
   virtual bool Contains(Vector point) const = 0;
-  virtual const char* Name() const;
 };

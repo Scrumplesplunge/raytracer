@@ -15,6 +15,4 @@ class Diffuse : public Material {
   Diffuse(real, Vector);
 
   Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
-
-  const char *name() const override;
 };

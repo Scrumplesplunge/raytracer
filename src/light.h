@@ -13,6 +13,4 @@ class Light : public Material {
   Light(Vector);
 
   Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
-
-  const char *name() const override;
 };

@@ -39,5 +39,3 @@ Vector Diffuse::outgoingLight(Shape* scene, const TraceRes& hit,
   Vector temp = mul * light;
   return temp * color;
 }
-
-const char* Diffuse::name() const { return "Diffuse"; }

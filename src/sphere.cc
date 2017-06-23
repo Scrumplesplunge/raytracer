@@ -81,5 +81,3 @@ bool Sphere::Contains(Vector point) const {
   Vector offset = point - position_;
   return dot(offset, offset) < square_radius_;
 }
-
-const char* Sphere::Name() const { return "Sphere"; }

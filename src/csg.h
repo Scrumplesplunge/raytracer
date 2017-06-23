@@ -10,7 +10,6 @@ class Union : public Shape {
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;
-  const char* Name() const override;
 
  private:
   std::vector<const Shape*> contents_;
@@ -22,7 +21,6 @@ class Intersection : public Shape {
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;
-  const char* Name() const override;
 
  private:
   std::vector<const Shape*> contents_;
@@ -34,7 +32,6 @@ class Complement : public Shape {
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;
-  const char* Name() const override;
 
  private:
   const Shape* shape_;

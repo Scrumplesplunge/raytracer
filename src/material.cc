@@ -32,5 +32,3 @@ Material::Fresnel Material::fresnel(Vector vec, Vector norm,
 
   return out;
 }
-
-const char* Material::name() const { return "Undefined Material"; }

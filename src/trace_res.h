@@ -24,8 +24,6 @@ class TraceRes {
  public:
   TraceRes();
   TraceRes(const Primitive *);
-
-  void print();
 };
 
 bool operator<(const TraceRes& left, const TraceRes& right);

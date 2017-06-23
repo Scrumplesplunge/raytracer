@@ -9,5 +9,3 @@ Vector Light::outgoingLight(
     real /* significance */) const {
   return color;
 }
-
-const char* Light::name() const { return "Light Source"; }

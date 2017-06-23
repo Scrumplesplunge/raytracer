@@ -11,12 +11,3 @@ TraceRes::TraceRes(const Primitive *prim)
 bool operator<(const TraceRes& left, const TraceRes& right) {
   return left.distance < right.distance;
 }
-
-void TraceRes::print() {
-  std::cout << "TraceRes on object " << primitive->name() << " @[" << primitive
-            << "]";
-  if (mask & TraceRes::ENTERING)
-    std::cout << " (" << (entering ? "ENTERING" : "EXITING") << ")";
-  if (mask & TraceRes::DISTANCE) std::cout << " DIST=" << distance;
-  std::cout << std::endl;
-}

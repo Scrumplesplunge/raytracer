@@ -48,5 +48,3 @@ void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
 bool Plane::Contains(Vector point) const {
   return dot(point, normal) < offset;
 }
-
-const char* Plane::Name() const { return "Plane"; }

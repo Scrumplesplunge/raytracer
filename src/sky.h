@@ -8,6 +8,4 @@ class Sky : public Material, public Image {
   Sky(const char *);
 
   Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
-
-  const char *name() const override;
 };

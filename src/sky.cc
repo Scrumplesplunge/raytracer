@@ -18,5 +18,3 @@ Vector Sky::outgoingLight(Shape* /* scene */, const TraceRes& /* hit */,
   real red = pix[2], green = pix[1], blue = pix[0];
   return Vector{red, green, blue} / 255;
 }
-
-const char *Sky::name() const { return "Sky Sphere"; }
