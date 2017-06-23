@@ -19,7 +19,7 @@ void Camera::LookAt(Vector position) {
   transform_.c = cross(transform_.a, transform_.b);
 }
 
-Ray Camera::GetRay(real x, real y) {
+Ray Camera::GetRay(real x, real y) const {
   Vector start = transform_.d;
   Vector base_ray =
       {1, scale_factor_ * (width_ - 2 * x), scale_factor_ * (height_ - 2 * y)};
