@@ -76,6 +76,14 @@ std::string Filename(int iteration) {
   return buffer;
 }
 
+void SaveImage(const Image& image, int iteration, int num_rays_so_far) {
+  std::string filename = Filename(iteration);
+  std::cout << "Saving " << filename << " (" << num_rays_so_far
+            << " rays so far).." << std::flush;
+  image.Save(filename);
+  std::cout << " Done." << std::endl;
+}
+
 int main() {
   source_far.material = source_left.material = source_right.material = &light;
   box_wall_far.material = &white;
@@ -95,7 +103,7 @@ int main() {
   room.Add(&box_wall_far);
   room.Add(&box_wall_behind);
 
-  Camera cam(640, 480, 0.4);
+  Camera cam(3840, 2160, 0.4);
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
 
@@ -105,16 +113,18 @@ int main() {
 
   Render render(Raytrace, &room, cam, options);
 
-  for (unsigned int i = 0; i < 100; i++) {
-    Image canvas(render());
-
-    // Save the image.
-    std::string filename = Filename(i);
-    std::cout << "Saving " << filename << " (" << num_rays << " so far).."
-              << std::flush;
-    canvas.Save(filename);
-    std::cout << " Done." << std::endl;
+  constexpr int ITERATIONS = 10000;
+  Image image = render();
+  for (unsigned int i = 0; i < ITERATIONS - 1; i++) {
+    int num_rays_so_far = num_rays;
+    std::thread save_thread([i, num_rays_so_far, image = std::move(image)] {
+      // Saving the image can take a while, so try to do it in parallel.
+      SaveImage(image, i, num_rays_so_far);
+    });
+    image = render();
+    save_thread.join();
   }
+  SaveImage(image, ITERATIONS - 1, num_rays);
 
   return 0;
 }

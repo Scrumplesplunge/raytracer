@@ -16,6 +16,7 @@ class Image {
   Image(int width, int height);
   Image(const Image& other);
   Image(Image&& other) = default;
+  Image& operator=(Image&& other) = default;
 
   static Image Load(const std::string& filename);
   void Save(const std::string& filename) const;
