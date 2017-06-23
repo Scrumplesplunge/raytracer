@@ -34,7 +34,7 @@ Image Render::operator()() {
 
   std::vector<std::thread> threads;
   for (int i = 0; i < options_.num_threads; i++)
-    threads.push_back(std::thread(&Render::RenderChunk, this));
+    threads.push_back(std::thread([this] { RenderChunk(); }));
   for (auto& thread : threads) thread.join();
 
   return output_;

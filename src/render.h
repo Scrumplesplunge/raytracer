@@ -31,7 +31,7 @@ class Render {
  private:
   void RenderChunk();
 
-  const RenderPixelFunction* const render_pixel_;
+  RenderPixelFunction* const render_pixel_;
   const Shape* scene_;
   const Camera camera_;
   const RenderOptions options_;
