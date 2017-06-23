@@ -16,6 +16,7 @@
 #include "vector.h"
 
 #include <atomic>
+#include <chrono>
 #include <iostream>
 #include <string>
 
@@ -76,10 +77,13 @@ std::string Filename(int iteration) {
   return buffer;
 }
 
-void SaveImage(const Image& image, int iteration, int num_rays_so_far) {
+void SaveImage(const Image& image, int iteration, int num_rays_so_far,
+               std::chrono::nanoseconds duration) {
   std::string filename = Filename(iteration);
+  std::chrono::milliseconds duration_ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration);
   std::cout << "Saving " << filename << " (" << num_rays_so_far
-            << " rays so far).." << std::flush;
+            << " rays in " << duration_ms.count() << "ms).." << std::flush;
   image.Save(filename);
   std::cout << " Done." << std::endl;
 }
@@ -114,17 +118,20 @@ int main() {
   Render render(Raytrace, &room, cam, options);
 
   constexpr int ITERATIONS = 10000;
+  using clock = std::chrono::steady_clock;
+  const auto start = clock::now();
   Image image = render();
   for (unsigned int i = 0; i < ITERATIONS - 1; i++) {
     int num_rays_so_far = num_rays;
-    std::thread save_thread([i, num_rays_so_far, image = std::move(image)] {
+    std::thread save_thread([
+        start, i, num_rays_so_far, image = std::move(image)] {
       // Saving the image can take a while, so try to do it in parallel.
-      SaveImage(image, i, num_rays_so_far);
+      SaveImage(image, i, num_rays_so_far, clock::now() - start);
     });
     image = render();
     save_thread.join();
   }
-  SaveImage(image, ITERATIONS - 1, num_rays);
+  SaveImage(image, ITERATIONS - 1, num_rays, clock::now() - start);
 
   return 0;
 }
