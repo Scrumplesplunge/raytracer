@@ -6,11 +6,12 @@
 #include "vector.h"
 
 class Light : public Material {
- private:
-  Vector color;
-
  public:
-  Light(Vector);
+  Light(Vector color);
 
-  Vector outgoingLight(Shape *, const TraceRes &, Vector, real) const override;
+  Vector outgoingLight(Shape* scene, const TraceRes& hit, Vector direction,
+                       real significance) const override;
+
+ private:
+  Vector color_;
 };
