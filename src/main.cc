@@ -41,10 +41,21 @@ Plane box_wall_right({0, -2, 0}, {0, 1, 0});
 Plane box_wall_far({2, 0, 0}, {-1, 0, 0});
 Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
 
-std::atomic<uint64_t> num_rays = 0;
+std::atomic<uint64_t> total_num_rays = 0;
+class Counter {
+ public:
+  ~Counter() { total_num_rays += value_; }
+
+  void operator++(int) { value_++; }
+
+ private:
+  uint_fast32_t value_;
+};
+
 class Scene : public Union {
  public:
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override {
+    thread_local Counter num_rays;
     num_rays++;
     return Union::Trace(ray, output);
   }
@@ -114,7 +125,7 @@ int main() {
   const auto start = clock::now();
   Image image = render();
   for (unsigned int i = 0; i < ITERATIONS - 1; i++) {
-    int num_rays_so_far = num_rays;
+    int num_rays_so_far = total_num_rays;
     std::thread save_thread([
         start, i, num_rays_so_far, image = std::move(image)] {
       // Saving the image can take a while, so try to do it in parallel.
@@ -123,7 +134,7 @@ int main() {
     image = render();
     save_thread.join();
   }
-  SaveImage(image, ITERATIONS - 1, num_rays, clock::now() - start);
+  SaveImage(image, ITERATIONS - 1, total_num_rays, clock::now() - start);
 
   return 0;
 }
