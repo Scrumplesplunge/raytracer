@@ -1,55 +1,32 @@
 #pragma once
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
+struct Pixel {
+  using Component = std::uint8_t;
+  Component red = 0;
+  Component green = 0;
+  Component blue = 0;
+};
+
 class Image {
  public:
-  enum Format {
-    BMP,
-    INVALID  // This doubles as an accessor to the number of valid states. Must
-             // be last.
-  };
+  Image(int width, int height);
+  Image(const Image& other);
+  Image(Image&& other) = default;
 
-  static const char *formats[];
+  static Image Load(const std::string& filename);
+  void Save(const std::string& filename) const;
 
-  static const char *errorStrings[];
+  int width() const { return width_; }
+  int height() const { return height_; }
 
-  void error(unsigned int, const char *);
+  Pixel& operator()(int x, int y);
+  Pixel operator()(int x, int y) const;
 
  private:
-  bool success;
-  const char *errorString;
-  const char *detailedErrorString;
-
-  int width, height;
-  unsigned char *data;
-
-  void loadBMP(const char *);
-
-  bool saveBMP(const char *);
-
-  void cleanup();
-  void clone(const Image &);
-
- public:
-  // Class construction / destruction.
-  Image(int, int);
-  Image(const char *);
-  Image(const Image &);
-  ~Image();
-
-  // Copy.
-  void operator=(const Image &);
-
-  // Pixel access.
-  unsigned int getWidth() const;
-  unsigned int getHeight() const;
-  unsigned char *operator()(int, int) const;
-
-  // Manipulation.
-  void draw(const Image &, int, int);
-
-  // File I/O
-  void load(const char *);
-  bool save(const char *);
-  bool good() const;
-  void printError() const;
+  int width_, height_;
+  std::unique_ptr<Pixel[]> pixels_;
 };

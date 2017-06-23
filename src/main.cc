@@ -16,8 +16,8 @@
 #include "vector.h"
 
 #include <atomic>
-#include <cmath>
 #include <iostream>
+#include <string>
 
 Glass glass({0.8, 0.9, 0.9});
 Diffuse white(1, {1, 1, 1}), red(1, {1, 0.1, 0}),
@@ -69,13 +69,14 @@ Vector Raytrace(const Shape* scene, Ray ray) {
   }
 }
 
-int main() {
-  // Test image writing.
-  if (!sky.good()) {
-    sky.printError();
-    return 1;
-  }
+std::string Filename(int iteration) {
+  constexpr int MAX_LENGTH = 100;
+  char buffer[MAX_LENGTH];
+  snprintf(buffer, MAX_LENGTH, "frame_%05d.png", iteration);
+  return buffer;
+}
 
+int main() {
   source_far.material = source_left.material = source_right.material = &light;
   box_wall_far.material = &white;
   box_ceil.material = box_floor.material = box_wall_behind.material = &white;
@@ -108,17 +109,10 @@ int main() {
     Image canvas(render());
 
     // Save the image.
-    char filename[12] = {'t', 'e', 's', 't', '0', '0',
-                         '0', '.', 'b', 'm', 'p', '\0'};
-    filename[4] = '0' + i / 100;
-    filename[5] = '0' + (i / 10) % 10;
-    filename[6] = '0' + i % 10;
+    std::string filename = Filename(i);
     std::cout << "Saving " << filename << " (" << num_rays << " so far).."
               << std::flush;
-    if (!canvas.save(filename)) {
-      canvas.printError();
-      return 1;
-    }
+    canvas.Save(filename);
     std::cout << " Done." << std::endl;
   }
 

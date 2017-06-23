@@ -91,10 +91,10 @@ void Render::RenderChunk() {
         color = pixel / num_passes_;
         Vector bitmap_color =
             256 * (options_.contrast * color + options_.brightness);
-        auto* bitmap_pixel = output_(chunk_x + x, chunk_y + y);
-        bitmap_pixel[2] = std::clamp(bitmap_color.x, real{0}, real{255});
-        bitmap_pixel[1] = std::clamp(bitmap_color.y, real{0}, real{255});
-        bitmap_pixel[0] = std::clamp(bitmap_color.z, real{0}, real{255});
+        Pixel& bitmap_pixel = output_(chunk_x + x, chunk_y + y);
+        bitmap_pixel.red = std::clamp(bitmap_color.x, real{0}, real{255});
+        bitmap_pixel.green = std::clamp(bitmap_color.y, real{0}, real{255});
+        bitmap_pixel.blue = std::clamp(bitmap_color.z, real{0}, real{255});
       }
     }
   }
