@@ -1,5 +1,4 @@
 #include "mirror.h"
-#include "primitive.h"
 #include "random.h"
 
 Mirror::Mirror(Vector color) : color_(color) {}

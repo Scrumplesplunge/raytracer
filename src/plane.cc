@@ -1,7 +1,7 @@
 #include "plane.h"
 
-Plane::Plane(Material* material, Vector position, Vector normal)
-    : Primitive{material}, normal_(normal), offset_(dot(position, normal)) {}
+Plane::Plane(const Material* material, Vector position, Vector normal)
+    : material_{material}, normal_(normal), offset_(dot(position, normal)) {}
 
 void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   // Component of ray direction in the direction of the surface normal.
@@ -20,7 +20,7 @@ void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   if (t < 0) return;
 
   // We have found the intersection! Hoorah!
-  TraceRes hit = {material};
+  TraceRes hit = {material_};
 
   hit.distance = t;
   hit.entering = a < 0;

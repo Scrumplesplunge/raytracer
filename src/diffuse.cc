@@ -1,6 +1,5 @@
 #include "diffuse.h"
 #include "config.h"
-#include "primitive.h"
 #include "random.h"
 
 #include <cmath>

@@ -1,5 +1,4 @@
 #include "trace_res.h"
-#include "primitive.h"
 
 #include <iostream>
 

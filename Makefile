@@ -18,7 +18,6 @@ RAYTRACER_DEPS =  \
 	material  \
 	mirror  \
 	plane  \
-	primitive  \
 	random  \
 	ray  \
 	render  \

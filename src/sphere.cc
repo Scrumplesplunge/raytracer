@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-Sphere::Sphere(Material* material, Vector position, real radius)
-    : Primitive(material), position_(position),
+Sphere::Sphere(const Material* material, Vector position, real radius)
+    : material_(material), position_(position),
       square_radius_(radius * radius) {}
 
 void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
@@ -53,7 +53,7 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   real t2 = -d + root_determinant;
 
   if (t1 >= 0) {
-    TraceRes near = {material};
+    TraceRes near = {material_};
     near.distance = t1;
     near.entering = true;
     near.position = ray.start + ray.direction * near.distance;
@@ -61,7 +61,7 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     output->push_back(near);
   }
   if (t2 >= 0) {
-    TraceRes far = {material};
+    TraceRes far = {material_};
     far.distance = t2;
     far.entering = false;
     far.position = ray.start + ray.direction * far.distance;

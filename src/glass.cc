@@ -1,5 +1,4 @@
 #include "glass.h"
-#include "primitive.h"
 #include "random.h"
 #include "ray.h"
 
