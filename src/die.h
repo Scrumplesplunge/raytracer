@@ -2,8 +2,7 @@
 
 #include "csg.h"
 #include "material.h"
-#include "plane.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "transform.h"
 
 class Die : public Intersection {

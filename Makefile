@@ -17,13 +17,11 @@ RAYTRACER_DEPS =  \
 	light  \
 	material  \
 	mirror  \
-	plane  \
 	random  \
 	ray  \
 	render  \
-	shape  \
+	shapes  \
 	sky  \
-	sphere  \
 	trace_res  \
 	transform  \
 	vector  \

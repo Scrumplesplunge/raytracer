@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include "material.h"
-#include "shape.h"
+#include "shapes.h"
 #include "trace_res.h"
 #include "vector.h"
 

@@ -3,7 +3,7 @@
 #include "camera.h"
 #include "image.h"
 #include "ray.h"
-#include "shape.h"
+#include "shapes.h"
 #include "vector.h"
 
 #include <cstdint>
