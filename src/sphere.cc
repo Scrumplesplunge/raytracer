@@ -2,8 +2,9 @@
 
 #include <cmath>
 
-Sphere::Sphere(Vector position, real radius)
-    : position_(position), square_radius_(radius * radius) {}
+Sphere::Sphere(Material* material, Vector position, real radius)
+    : Primitive(material), position_(position),
+      square_radius_(radius * radius) {}
 
 void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   // Call:

@@ -9,7 +9,7 @@
 class Sphere : public Primitive {
  public:
   Sphere() = default;
-  Sphere(Vector position, real radius);
+  Sphere(Material* material, Vector position, real radius);
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;

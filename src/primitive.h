@@ -5,5 +5,8 @@
 
 class Primitive : public Shape {
  public:
-  Material* material;
+  Primitive() = default;
+  Primitive(Material* material);
+
+  Material* material = nullptr;
 };

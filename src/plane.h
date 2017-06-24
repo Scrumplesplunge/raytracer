@@ -11,7 +11,7 @@ class Plane : public Primitive {
   Plane() = default;
 
   // The normal should be of unit length.
-  Plane(Vector position, Vector normal);
+  Plane(Material* material, Vector position, Vector normal);
 
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
   bool Contains(Vector point) const override;

@@ -47,36 +47,24 @@ SphereParameters dots[] = {
 
 }  // namespace
 
-Die::Die(const Transform& transform, Material* material) {
-  bounding_sphere_ =
-      {transform * bounding_sphere.position, bounding_sphere.radius};
-  bounding_sphere_.material = material;
-  Add(&bounding_sphere_);
+Die::Die(Material* material, const Transform& transform) {
+  Add(std::make_unique<Sphere>(material, transform * bounding_sphere.position,
+                               bounding_sphere.radius));
   for (int i = 0; i < 6; i++) {
-    bounding_planes_[i] = {transform * bounding_planes[i].position,
-                           transform(bounding_planes[i].normal)};
-    bounding_planes_[i].material = material;
-    Add(&bounding_planes_[i]);
+    Add(std::make_unique<Plane>(material,
+                                transform * bounding_planes[i].position,
+                                transform(bounding_planes[i].normal)));
   }
   for (int i = 0; i < NUM_DOTS; i++) {
-    dots_[i] = {transform * dots[i].position, dots[i].radius, material};
-    Add(&dots_[i]);
+    Add(std::make_unique<AntiSphere>(material, transform * dots[i].position,
+                                     dots[i].radius));
   }
 }
 
-Die::AntiSphere::AntiSphere() : complement_(&sphere_) {}
+Die::AntiSphere::AntiSphere() : complement_(std::make_unique<Sphere>()) {}
 
-Die::AntiSphere::AntiSphere(Vector position, real radius, Material* material)
-    : sphere_(position, radius), complement_(&sphere_) {
-  sphere_.material = material;
-}
-
-Die::AntiSphere& Die::AntiSphere::operator=(const AntiSphere& other) {
-  // Don't copy the complement_; the pointers are already correct so just update
-  // the sphere being pointed to.
-  sphere_ = other.sphere_;
-  return *this;
-}
+Die::AntiSphere::AntiSphere(Material* material, Vector position, real radius)
+    : complement_(std::make_unique<Sphere>(material, position, radius)) {}
 
 void Die::AntiSphere::Trace(
     const Ray& ray, std::vector<TraceRes>* output) const {

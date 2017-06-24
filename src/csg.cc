@@ -17,13 +17,15 @@ void Merge(Iterator first, Iterator middle, Iterator last) {
 
 }  // namespace
 
-void Union::Add(const Shape* shape) { contents_.push_back(shape); }
+void Union::Add(std::unique_ptr<Shape> shape) {
+  contents_.push_back(std::move(shape));
+}
 
 void Union::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   const size_t start_index = output->size();
 
   bool inside_union = false;
-  for (const Shape* shape : contents_) {
+  for (const auto& shape : contents_) {
     const size_t middle_index = output->size();
 
     // Trace the boundaries of the underlying shape.
@@ -54,20 +56,20 @@ void Union::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
 }
 
 bool Union::Contains(Vector point) const {
-  auto contains_point = [&](const Shape* shape) {
-    return shape->Contains(point);
-  };
+  auto contains_point = [&](auto& shape) { return shape->Contains(point); };
   return std::any_of(contents_.begin(), contents_.end(), contains_point);
 }
 
-void Intersection::Add(const Shape* shape) { contents_.push_back(shape); }
+void Intersection::Add(std::unique_ptr<Shape> shape) {
+  contents_.push_back(std::move(shape));
+}
 
 void Intersection::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   const size_t start_index = output->size();
 
   std::vector<TraceRes> boundaries;
   bool inside_intersection = true;
-  for (const Shape* shape : contents_) {
+  for (const auto& shape : contents_) {
     const size_t middle_index = output->size();
 
     // Trace the boundaries of the underlying shape.
@@ -105,14 +107,12 @@ void Intersection::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
 }
 
 bool Intersection::Contains(Vector point) const {
-  auto contains_point = [&](const Shape* shape) {
-    return shape->Contains(point);
-  };
+  auto contains_point = [&](auto& shape) { return shape->Contains(point); };
   return std::all_of(contents_.begin(), contents_.end(), contains_point);
 }
 
-Complement::Complement(const Shape* shape)
-    : shape_(shape) {}
+Complement::Complement(std::unique_ptr<Shape> shape)
+    : shape_(std::move(shape)) {}
 
 void Complement::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   const size_t start_index = output->size();

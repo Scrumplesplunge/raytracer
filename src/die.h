@@ -8,20 +8,18 @@
 
 class Die : public Intersection {
  public:
-  Die(const Transform& transform, Material* material);
+  Die(Material* material, const Transform& transform);
 
  private:
   class AntiSphere : public Shape {
    public:
     AntiSphere();
-    AntiSphere(Vector position, real radius, Material* material);
-    AntiSphere& operator=(const AntiSphere& other);
+    AntiSphere(Material* material, Vector position, real radius);
 
     void Trace(const Ray& ray, std::vector<TraceRes>* output) const override;
     bool Contains(Vector point) const override;
 
    private:
-    Sphere sphere_;
     Complement complement_;
   };
 

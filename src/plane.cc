@@ -1,7 +1,7 @@
 #include "plane.h"
 
-Plane::Plane(Vector position, Vector normal)
-    : normal_(normal), offset_(dot(position, normal)) {}
+Plane::Plane(Material* material, Vector position, Vector normal)
+    : Primitive{material}, normal_(normal), offset_(dot(position, normal)) {}
 
 void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   // Component of ray direction in the direction of the surface normal.

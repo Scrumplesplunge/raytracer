@@ -20,47 +20,65 @@
 #include <iostream>
 #include <string>
 
-Glass glass({0.8, 0.9, 0.9});
-Diffuse white(1, {1, 1, 1}), red(1, {1, 0.1, 0}),
-    green(1, {0.1, 1, 0});
-Mirror mirror({0.9, 0.9, 0.9});
-Light light({1, 1, 1});
-Sky sky("assets/sky.jpg");
-
-Die die(Transform{}.RotateZ(0.3).Translate({1, -0.6, 0}), &mirror);
-Die die2(Transform{}.RotateZ(-0.3).Translate({-0.5, 0.6, 0}), &glass);
-
-Sphere source_far({2, 0, 2}, 0.5);
-Sphere source_left({0, -2, 2}, 0.5);
-Sphere source_right({0, 2, 2}, 0.5);
-
-Plane box_floor({0, 0, -0.501}, {0, 0, 1});
-Plane box_ceil({0, 0, 3.5}, {0, 0, -1});
-Plane box_wall_left({0, 2, 0}, {0, -1, 0});
-Plane box_wall_right({0, -2, 0}, {0, 1, 0});
-Plane box_wall_far({2, 0, 0}, {-1, 0, 0});
-Plane box_wall_behind({-10.1, 0, 0}, {1, 0, 0});
-
-std::atomic<uint64_t> total_num_rays = 0;
+// The things we want to count happen regularly enough that simply incrementing
+// the atomic integer is too slow. This class can be used to accumulate a count
+// before adding in bulk. For example, a thread-local instance for counters that
+// are only examined once threads have been terminated.
 class Counter {
  public:
-  ~Counter() { total_num_rays += value_; }
+  Counter(std::atomic<uint64_t>* output) : output_(output) {}
+  ~Counter() { *output_ += value_; }
 
   void operator++(int) { value_++; }
 
  private:
-  uint_fast32_t value_;
+  std::atomic<uint64_t>* output_;
+  uint_fast64_t value_;
 };
+
+std::atomic<uint64_t> total_num_rays = 0;
+thread_local Counter num_rays{&total_num_rays};
 
 class Scene : public Union {
  public:
+  Scene() {
+    // Add the dice.
+    Add(std::make_unique<Die>(
+            glass_.get(), Transform{}.RotateZ(-0.3).Translate({-0.5, 0.6, 0})));
+    Add(std::make_unique<Die>(
+            mirror_.get(), Transform{}.RotateZ(0.3).Translate({1, -0.6, 0})));
+    // Add the walls.
+    Add(std::make_unique<Plane>(
+            white_.get(), Vector{0, 0, -0.501}, Vector{0, 0, 1}));  // Floor
+    Add(std::make_unique<Plane>(
+            white_.get(), Vector{0, 0, 3.5}, Vector{0, 0, -1}));  // Ceiling
+    Add(std::make_unique<Plane>(
+            red_.get(), Vector{0, 2, 0}, Vector{0, -1, 0}));  // Left wall
+    Add(std::make_unique<Plane>(
+            green_.get(), Vector{0, -2, 0}, Vector{0, 1, 0}));  // Right wall
+    Add(std::make_unique<Plane>(
+            white_.get(), Vector{2, 0, 0}, Vector{-1, 0, 0}));  // Far wall
+    Add(std::make_unique<Plane>(
+            white_.get(), Vector{-10.1, 0, 0}, Vector{1, 0, 0}));  // Behind
+    // Add the light source.
+    Add(std::make_unique<Sphere>(
+            light_.get(), Vector{2, 0, 2}, 0.5));  // Far wall
+  }
+
   void Trace(const Ray& ray, std::vector<TraceRes>* output) const override {
-    thread_local Counter num_rays;
     num_rays++;
     return Union::Trace(ray, output);
   }
+
+ private:
+  std::unique_ptr<Material>
+      glass_ = std::make_unique<Glass>(Vector{0.8, 0.9, 0.9}),
+      green_ = std::make_unique<Diffuse>(1, Vector{0.1, 1, 0}),
+      light_ = std::make_unique<Light>(Vector{1, 1, 1}),
+      mirror_ = std::make_unique<Mirror>(Vector{0.9, 0.9, 0.9}),
+      red_ = std::make_unique<Diffuse>(1, Vector{1, 0.1, 0}),
+      white_ = std::make_unique<Diffuse>(1, Vector{1, 1, 1});
 };
-Scene room;
 
 Vector Raytrace(const Shape* scene, Ray ray) {
   std::vector<TraceRes> boundaries;
@@ -92,24 +110,7 @@ void SaveImage(const Image& image, int iteration, int num_rays_so_far,
 }
 
 int main() {
-  source_far.material = source_left.material = source_right.material = &light;
-  box_wall_far.material = &white;
-  box_ceil.material = box_floor.material = box_wall_behind.material = &white;
-  box_wall_left.material = &red;
-  box_wall_right.material = &green;
-
-  room.Add(&source_far);
-  // room.Add(&source_left);
-  // room.Add(&source_right);
-  room.Add(&die);
-  room.Add(&die2);
-  room.Add(&box_floor);
-  room.Add(&box_ceil);
-  room.Add(&box_wall_left);
-  room.Add(&box_wall_right);
-  room.Add(&box_wall_far);
-  room.Add(&box_wall_behind);
-
+  Scene scene;
   Camera cam(3840, 2160, 0.4);
   cam.MoveTo({-10, 1, 1.5});
   cam.LookAt({0.75, -0.2, 0});
@@ -118,7 +119,7 @@ int main() {
   options.sub_pixels = 1;
   options.contrast = 20;
 
-  Render render(Raytrace, &room, cam, options);
+  Render render(Raytrace, &scene, cam, options);
 
   constexpr int ITERATIONS = 10000;
   using clock = std::chrono::steady_clock;
