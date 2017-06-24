@@ -53,7 +53,7 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   real t2 = -d + root_determinant;
 
   if (t1 >= 0) {
-    TraceRes near = {this};
+    TraceRes near = {material};
     near.distance = t1;
     near.entering = true;
     near.position = ray.start + ray.direction * near.distance;
@@ -61,7 +61,7 @@ void Sphere::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
     output->push_back(near);
   }
   if (t2 >= 0) {
-    TraceRes far = {this};
+    TraceRes far = {material};
     far.distance = t2;
     far.entering = false;
     far.position = ray.start + ray.direction * far.distance;

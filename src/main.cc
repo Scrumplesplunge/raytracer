@@ -86,8 +86,8 @@ Vector Raytrace(const Shape* scene, Ray ray) {
   if (boundaries.size() == 0) {
     return {1, 0, 1};
   } else {
-    const Material& material = *boundaries[0].primitive->material;
-    return material.OutgoingLight(scene, boundaries[0], -ray.direction, 1);
+    return boundaries[0].material->OutgoingLight(
+        scene, boundaries[0], -ray.direction, 1);
   }
 }
 

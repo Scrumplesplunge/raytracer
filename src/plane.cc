@@ -20,7 +20,7 @@ void Plane::Trace(const Ray& ray, std::vector<TraceRes>* output) const {
   if (t < 0) return;
 
   // We have found the intersection! Hoorah!
-  TraceRes hit(this);
+  TraceRes hit = {material};
 
   hit.distance = t;
   hit.entering = a < 0;

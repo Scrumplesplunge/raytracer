@@ -28,9 +28,8 @@ Vector Diffuse::OutgoingLight(const Shape* scene, const TraceRes& hit,
 
   if (boundaries.size() == 0) return {};
 
-  const Material& material = *boundaries[0].primitive->material;
   real light_significance = dot(vector, normal);
-  Vector light = material.OutgoingLight(
+  Vector light = boundaries[0].material->OutgoingLight(
       scene, boundaries[0], -vector, significance * light_significance);
   return light_significance * light * color_;
 }

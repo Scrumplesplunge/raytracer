@@ -17,8 +17,7 @@ Vector Mirror::OutgoingLight(const Shape* scene, const TraceRes& hit,
   
   if (boundaries.size() == 0) return {};
 
-  const Material& material = *boundaries[0].primitive->material;
-  Vector light = material.OutgoingLight(
+  Vector light = boundaries[0].material->OutgoingLight(
       scene, boundaries[0], -reflected_direction, significance * 0.9);
   return light * color_;
 }

@@ -3,14 +3,14 @@
 #include "config.h"
 #include "vector.h"
 
-class Primitive;
+class Material;
 
 struct TraceRes {
   TraceRes() = default;
-  TraceRes(const Primitive* primitive);
+  TraceRes(const Material* material);
 
   Vector position, normal;
-  const Primitive* primitive;
+  const Material* material;
   real distance;
   bool entering;
 };

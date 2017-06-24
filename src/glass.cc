@@ -39,7 +39,7 @@ Vector Glass::TraceColor(const Shape* scene, const TraceRes& hit,
     scene->Trace(reflectiveRay, &boundaries);
     if (boundaries.size() > 0) {
       real mul = children.fraction_reflected;
-      Vector temp = boundaries[0].primitive->material->OutgoingLight(
+      Vector temp = boundaries[0].material->OutgoingLight(
           scene, boundaries[0], -children.reflect, significance * mul);
       return temp * color_;
     }
@@ -50,7 +50,7 @@ Vector Glass::TraceColor(const Shape* scene, const TraceRes& hit,
     scene->Trace(refractiveRay, &boundaries);
     if (boundaries.size() > 0) {
       real mul = (1 - children.fraction_reflected);
-      Vector temp = boundaries[0].primitive->material->OutgoingLight(
+      Vector temp = boundaries[0].material->OutgoingLight(
           scene, boundaries[0], -children.refract, significance * mul);
       if (hit.entering) {
         return temp * Vector{std::pow(color_.x, boundaries[0].distance),
